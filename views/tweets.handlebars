@@ -1,1 +1,31 @@
-<div>tweet</div>
+<!--views/tweets.handlebars-->
+<div class="row">
+  <div class="left col-md-8">
+    <h2>Tweets Left</h2>
+    <textarea class="form-control rounded-0" name="newTweet" id="newTweet" rows="5">What's on your mind?</textarea>
+    <a href="#" class="float-right">
+      <button type="button" class="btn btn-primary">Tweet</button>
+    </a>
+    <table class="table table-sm table-borderless">
+      <tbody>
+        {{#each tweets}}
+        <tr>
+          <td>{{this.id}}</td>
+          <td>
+            <p>{{this.updatedAt}}</p>
+            <p>{{this.description}}</p>
+            <p>
+              <a href="#">Reply</a>
+              <a href="#">Like</a>
+            </p>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="right col-md-4">
+    <h3>Tweets Right</h3>
+  </div>
+</div>

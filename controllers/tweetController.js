@@ -12,6 +12,14 @@ const tweetController = {
         }))
         res.render('tweets', { tweets: data })
       })
+  },
+  postTweet: (req, res) => {
+    return Tweet.create({
+      description: req.body.newTweet,
+      UserId: req.user.id
+    }).then(tweet => {
+      res.redirect(`/tweets`)
+    })
   }
 }
 module.exports = tweetController

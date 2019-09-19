@@ -2,11 +2,20 @@ const tweetController = require('../controllers/tweetController')
 const userController = require('../controllers/userController.js')
 const adminController = require('../controllers/adminController.js')
 
+// authenticate the identity first
+const authenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next()
+  }
+  res.redirect('/signin')
+}
+
 module.exports = (app, passport) => {
   app.get('/', (req, res) => {
     res.redirect('/tweets')
   })
-  app.get('/tweets', tweetController.getTweets)
+  app.get('/tweets', authenticated, tweetController.getTweets)
+  app.post('/tweets', authenticated, tweetController.postTweet)
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
   // 後台

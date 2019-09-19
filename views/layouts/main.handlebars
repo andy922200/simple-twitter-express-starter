@@ -25,8 +25,8 @@
         <a href="/admin/tweets" style="color: white;margin-right: 10px;">Admin 後台</a>
         {{/ifCond}}
         {{#if user}}
-        <span style="color: white;margin-right: 10px;">Hi, {{user.email}}</span>
-        <a href="/users/{{user.id}}" style="color: white;margin-right: 10px;">Profile</a>
+        <img src="{{user.avatar}}" alt="user image" style="width: 50px; height: 50px">
+        <a href="/users/{{user.id}}/tweets" style="color: white;margin-right: 10px;">{{user.name}}</a>
         <a href="/logout"><button class="btn btn-outline-success my-2 my-sm-0">LogOut</button></a>
         {{/if}}
       </div>

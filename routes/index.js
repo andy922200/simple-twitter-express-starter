@@ -1,6 +1,8 @@
 const tweetController = require('../controllers/tweetController')
 const userController = require('../controllers/userController.js')
 const adminController = require('../controllers/adminController.js')
+const multer = require('multer')
+const upload = multer({ dest: 'temp/' })
 
 // authenticate the identity first
 const authenticated = (req, res, next) => {
@@ -36,4 +38,12 @@ module.exports = (app, passport) => {
     userController.signIn
   )
   app.get('/logout', userController.logout)
+  app.get('/users/:id/tweets', authenticated, userController.getUser)
+  app.get('/users/:id/edit', authenticated, userController.editUser)
+  app.put(
+    '/users/:id/edit',
+    authenticated,
+    upload.single('avatar'),
+    userController.putUser
+  )
 }

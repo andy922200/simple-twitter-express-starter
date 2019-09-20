@@ -7,6 +7,6 @@ module.exports = {
     return options.inverse(this)
   },
   moment: function(time) {
-    return moment(time).fromNow()
+    return moment(time).format('YYYY-MM-DD, HH:mm')
   }
 }

@@ -3,6 +3,7 @@ const LocalStrategy = require('passport-local')
 const bcrypt = require('bcrypt-nodejs')
 const db = require('../models')
 const User = db.User
+const Tweet = db.Tweet
 
 passport.use(
   new LocalStrategy(
@@ -35,7 +36,7 @@ passport.serializeUser((user, cb) => {
   cb(null, user.id)
 })
 passport.deserializeUser((id, cb) => {
-  User.findByPk(id).then(user => {
+  User.findByPk(id, { include: Tweet }).then(user => {
     return cb(null, user)
   })
 })

@@ -40,7 +40,7 @@ module.exports = (app, passport) => {
   app.get('/logout', userController.logout)
   app.get('/users/:id/tweets', authenticated, userController.getUser)
   app.get('/users/:id/edit', authenticated, userController.editUser)
-  app.put(
+  app.post(
     '/users/:id/edit',
     authenticated,
     upload.single('avatar'),

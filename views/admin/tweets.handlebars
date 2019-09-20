@@ -1,8 +1,14 @@
 <h1>Twitter 後台</h1>
 <div class="container"></div>
-<a href='/admin/tweets'>Tweets</a>
-<span> | </span>
-<a href='/admin/users'>Users</a>
+
+<ul class="nav">
+  <li class="nav-item">
+    <a class="nav-link border bg-primary rounded text-white" href='/admin/tweets'>Tweets</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link border" href='/admin/users'>Users</a>
+  </li>
+</ul>
 
 <br />
 <br />
@@ -20,7 +26,7 @@
     <tr>
       <th scope="row">{{this.id}}</th>
       <td><a href='/users/{{this.User.id}}/tweets'>{{this.User.name}}</a></td>
-      <td>{{this.description}}</td>
+      <td><a href='/tweets/{{this.id}}/replies'>{{this.description}}</a></td>
       <td>
         <form action="/admin/tweets/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
           <button type="submit" class="btn btn-link">Delete</button>

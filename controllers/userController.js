@@ -50,7 +50,10 @@ const userController = {
     res.redirect('/signin')
   },
   getUser: (req, res) => {
-    return User.findByPk(req.params.id, { include: Tweet }).then(user => {
+    return User.findByPk(req.params.id, {
+      include: [{ model: Tweet }],
+      order: [[{ model: Tweet }, 'createdAt', 'DESC']]
+    }).then(user => {
       return res.render('profile', { profile: user })
     })
   },

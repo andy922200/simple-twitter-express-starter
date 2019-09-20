@@ -34,5 +34,10 @@
       </div>
     </div>
     {{/each}}
+    <form action="/tweets/{{tweet.id}}/replies" method="POST">
+      <textarea class="form-control rounded-0" name="newReply" id="newReply" rows="5" maxlength="140" required
+        placeholder="What's on your mind?"></textarea>
+      <button class="btn btn-primary float-right" type="submit">Reply</button>
+    </form>
   </div>
 </div>

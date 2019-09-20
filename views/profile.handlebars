@@ -10,7 +10,7 @@
     {{#ifCond profile.id user.id}}
     <a href="/users/{{user.id}}/edit"><button class="btn btn-primary">Edit Profile</button></a>
     {{else}}
-    <form action="/followingships" method="POST" style="display: contents;">
+    <form action="/followships" method="POST" style="display: contents;">
       <button type="submit" class="btn btn-primary" name="id" value={{profile.id}}>Follow</button>
     </form>
     {{/ifCond}}

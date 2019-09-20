@@ -1,0 +1,42 @@
+<h1>Twitter 後台</h1>
+<div class="container"></div>
+
+<ul class="nav">
+  <li class="nav-item">
+    <a class="nav-link border" href='/admin/tweets'>Tweets</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link border bg-primary rounded text-white" href='/admin/users'>Users</a>
+  </li>
+</ul>
+
+<br />
+<br />
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">User ID</th>
+      <th scope="col">User name</th>
+      <th scope="col">Activity</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each users}}
+    <tr>
+      <th scope="row">{{this.id}}</th>
+      <td><a href='/users/{{this.id}}/tweets'>{{this.name}}</a></td>
+      <td>
+        <span class="p-1 mr-1 bg-light">Tweets:<span
+            class="ml-1 badge badge-pill badge-success">{{this.Tweets.length}}</span></span>
+        <span class="p-1  mr-1 bg-light">Followers:<span
+            class="ml-1 badge badge-pill badge-success">{{this.Followers.length}}</span></span>
+        <span class="p-1 ml-1 bg-light">Followings:<span
+            class="ml-1 badge badge-pill badge-success">{{this.Followings.length}}</span></span>
+        <span class="p-1 ml-1 bg-light">Liked:<span
+            class="ml-1 badge badge-pill badge-success">{{{this.tweetBeLiked}}}</span></span>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+</div>

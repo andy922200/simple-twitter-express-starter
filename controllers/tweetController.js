@@ -2,6 +2,7 @@
 const db = require('../models')
 const User = db.User
 const Tweet = db.Tweet
+const Reply = db.Reply
 
 const tweetController = {
   getTweets: (req, res) => {
@@ -27,6 +28,18 @@ const tweetController = {
       UserId: req.user.id
     }).then(tweet => {
       res.redirect(`/tweets`)
+    })
+  },
+  getTweetReplies: (req, res) => {
+    Tweet.findByPk(req.params.id, {
+      include: [User, { model: Reply, include: [User] }]
+    }).then(result => {
+      const tweet = result.dataValues
+      const tweetUser = tweet.User.dataValues
+      const reply = result.Replies.map(r => ({
+        ...r.dataValues
+      }))
+      return res.render('replies', { reply: reply, tweet: tweet, tweetUser: tweetUser })
     })
   }
 }

@@ -12,6 +12,14 @@ const authenticated = (req, res, next) => {
   res.redirect('/signin')
 }
 
+const authenticatedAdmin = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    if (req.user.role === 'admin') { return next() }
+    return res.redirect('/')
+  }
+  res.redirect('/signin')
+}
+
 module.exports = (app, passport) => {
   app.get('/', (req, res) => {
     res.redirect('/tweets')
@@ -25,9 +33,9 @@ module.exports = (app, passport) => {
   app.get('/admin', (req, res) => {
     res.redirect('/admin/tweets')
   })
-  app.get('/admin/tweets', adminController.getTweets)
-  app.delete('/admin/tweets/:id', adminController.deleteTweet)
-  // app.get('/admin/users', adminController.getUsers)
+  app.get('/admin/tweets', authenticatedAdmin, adminController.getTweets)
+  app.delete('/admin/tweets/:id', authenticatedAdmin, adminController.deleteTweet)
+  app.get('/admin/users', authenticatedAdmin, adminController.getUsers)
   app.get('/signin', userController.signInPage)
   app.post(
     '/signin',

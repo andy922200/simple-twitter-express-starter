@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt-nodejs')
 const db = require('../models')
 const User = db.User
 const Tweet = db.Tweet
+const Like = db.Like
 const Followship = db.Followship
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
@@ -52,11 +53,32 @@ const userController = {
   },
   getUser: (req, res) => {
     return User.findByPk(req.params.id, {
-      include: [{ model: Tweet }, { model: User, as: 'Followers' }],
+      include: [
+        { model: Tweet, include: [{ model: User, as: 'LikedUsers' }] },
+        { model: Tweet, as: 'LikedTweets' },
+        { model: User, as: 'Followers' },
+        { model: User, as: 'Followings' }
+      ],
       order: [[{ model: Tweet }, 'createdAt', 'DESC']]
     }).then(user => {
       user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
-      return res.render('profile', { profile: user })
+      const totalTweets = user.Tweets.length
+      const totalLiked = user.LikedTweets.length
+      const totalFollowers = user.Followers.length
+      const totalFollowings = user.Followings.length
+      const data = user.Tweets.map(tweet => ({
+        ...tweet.dataValues,
+        isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
+        totalLikedUsers: tweet.dataValues.LikedUsers.length
+      }))
+      return res.render('profile', {
+        profile: user,
+        tweets: data,
+        totalLiked,
+        totalFollowers,
+        totalFollowings,
+        totalTweets
+      })
     })
   },
   editUser: (req, res) => {
@@ -110,6 +132,24 @@ const userController = {
       })
   },
 
+  addLike: (req, res) => {
+    return Like.create({
+      UserId: req.user.id,
+      TweetId: req.params.id
+    }).then(tweet => {
+      return res.redirect('back')
+    })
+  },
+  removeLike: (req, res) => {
+    return Like.findOne({
+      where: { UserId: req.user.id, TweetId: req.params.id }
+    }).then(like => {
+      like.destroy().then(tweet => {
+        return res.redirect('back')
+      })
+    })
+  }
+
   addFollowing: (req, res) => {
     if (req.user.id === Number(req.body.id)) {
       req.flash('error_messages', "無法追蹤自己")
@@ -139,6 +179,7 @@ const userController = {
             return res.redirect('back')
           })
       })
+
   }
 
 }

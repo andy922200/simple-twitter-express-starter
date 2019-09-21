@@ -7,11 +7,13 @@ const Reply = db.Reply
 const tweetController = {
   getTweets: (req, res) => {
     Tweet.findAll({
-      include: [User, Reply],
+      include: [User, Reply,{ model: User, as: 'LikedUsers' }],
       order: [['createdAt', 'DESC']]
     }).then(tweets => {
       tweets = tweets.map(r => ({
         ...r.dataValues,
+        isLiked: req.user.LikedTweets.map(d => d.id).includes(r.id),
+        totalLikedUsers: r.dataValues.LikedUsers.length,
         replyCount: r.dataValues.Replies.length
       }))
       User.findAll({

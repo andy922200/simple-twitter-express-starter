@@ -1,0 +1,43 @@
+<!--views/replies.handlebars-->
+<div class="row mt-3">
+  <div class="col-md-4 display-flex justify-content-center">
+    <h3>Left</h3>
+  </div>
+  <div class="col-md-8">
+    <p>Tweets</p>
+    <div class="card mb-3">
+      <div class="card-body row">
+        <div class="col-md-3">
+          <img src="{{tweetUser.avatar}}" alt="{{tweetUser.name}}" style="width: 100px">
+        </div>
+        <div class="col-md-9">
+          <p><a href="/users/{{tweetUser.id}}/tweets">@{{tweetUser.name}}</a> {{moment tweet.createdAt}}</p>
+          <p>{{tweet.description}}</p>
+          <span class="text-primary mr-3">Reply</span>
+          <span class="text-danger">like</span>
+        </div>
+      </div>
+    </div>
+    <p>Replies</p>
+    {{#each reply}}
+    <div class="card mb-3">
+      <div class="card-body row">
+        <div class="col-md-3">
+          <img src="{{this.User.avatar}}" alt="{{this.User.name}}" style="width: 100px">
+        </div>
+        <div class="col-md-9">
+          <p><a href="/users/{{this.User.id}}/tweets">@{{this.User.name}}</a> {{moment this.createdAt}}</p>
+          <p>{{this.comment}}</p>
+          <span class="text-primary mr-3">Reply</span>
+          <span class="text-danger">like</span>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+    <form action="/tweets/{{tweet.id}}/replies" method="POST">
+      <textarea class="form-control rounded-0" name="newReply" id="newReply" rows="5" maxlength="140" required
+        placeholder="What's on your mind?"></textarea>
+      <button class="btn btn-primary float-right" type="submit">Reply</button>
+    </form>
+  </div>
+</div>

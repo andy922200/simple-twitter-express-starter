@@ -5,14 +5,18 @@ const Tweet = db.Tweet
 
 const tweetController = {
   getTweets: (req, res) => {
-    Tweet.findAll({ include: [User], order: [['createdAt', 'DESC']] }).then(
-      tweets => {
-        const data = tweets.map(r => ({
-          ...r.dataValues
-        }))
-        res.render('tweets', { tweets: data })
-      }
-    )
+    Tweet.findAll({
+      include: [{ model: User, as: 'LikedUsers' }],
+      order: [['createdAt', 'DESC']]
+    }).then(tweets => {
+      const data = tweets.map(r => ({
+        ...r.dataValues,
+        isLiked: req.user.LikedTweets.map(d => d.id).includes(r.id),
+        totalLikedUsers: r.dataValues.LikedUsers.length
+      }))
+      // console.log(tweets[1])
+      res.render('tweets', { tweets: data })
+    })
   },
   postTweet: (req, res) => {
     if (!req.body.newTweet) {

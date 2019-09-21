@@ -36,7 +36,9 @@ passport.serializeUser((user, cb) => {
   cb(null, user.id)
 })
 passport.deserializeUser((id, cb) => {
-  User.findByPk(id, { include: Tweet }).then(user => {
+  User.findByPk(id, {
+    include: [{ model: Tweet }, { model: db.Tweet, as: 'LikedTweets' }]
+  }).then(user => {
     return cb(null, user)
   })
 })

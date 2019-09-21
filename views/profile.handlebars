@@ -3,10 +3,10 @@
     <img src="{{profile.avatar}}" alt="{{profile.name}}" style="width: 250px;margin-bottom: 25px;">
     <h3>{{profile.name}}</h3>
     <p>{{profile.introduction}}</p>
-    <p>Tweets</p>
-    <p><a href="/users/{{profile.id}}/followings">Following</a></p>
-    <p><a href="/users/{{profile.id}}/followers">Follower</a></p>
-    <p><a href="/users/{{profile.id}}/likes">Like</a></p>
+    <p>Tweets({{totalTweets}})</p>
+    <p><a href="/users/{{profile.id}}/followings">Following({{totalFollowings}})</a></p>
+    <p><a href="/users/{{profile.id}}/followers">Follower({{totalFollowers}})</a></p>
+    <p><a href="/users/{{profile.id}}/likes">Like({{totalLiked}})</a></p>
     {{#ifCond profile.id user.id}}
     <a href="/users/{{user.id}}/edit"><button class="btn btn-primary">Edit Profile</button></a>
     {{else}}
@@ -16,7 +16,7 @@
     {{/ifCond}}
   </div>
   <div class="col-md-8">
-    {{#each profile.Tweets}}
+    {{#each tweets}}
     <div class="card mb-3">
       <div class="card-body row">
         <div class="col-md-3">
@@ -26,7 +26,17 @@
           <p><a href="/users/{{../user.id}}/tweets">@{{../profile.name}}</a> {{moment this.createdAt}}</p>
           <p>{{this.description}}</p>
           <span class="text-primary mr-3">Reply</span>
-          <span class="text-danger">like</span>
+          {{#if this.isLiked}}
+          <form action="/tweets/{{this.id}}/unlike" method="POST" style="display: inline-block">
+            <button type="submit" class="btn btn-link" style="text-decoration:none"><i
+                class=" fas fa-thumbs-up"></i>({{this.totalLikedUsers}})</button>
+          </form>
+          {{else}}
+          <form action="/tweets/{{this.id}}/like" method="POST" style="display:inline-block">
+            <button type="submit" class="btn btn-link" style="text-decoration:none"><i
+                class="far fa-thumbs-up"></i>({{this.totalLikedUsers}})</button>
+          </form>
+          {{/if}}
         </div>
       </div>
     </div>

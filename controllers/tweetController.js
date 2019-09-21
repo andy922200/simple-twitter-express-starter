@@ -7,12 +7,14 @@ const Reply = db.Reply
 const tweetController = {
   getTweets: (req, res) => {
     Tweet.findAll({
-      include: [User],
+      include: [User, Reply],
       order: [['createdAt', 'DESC']]
     }).then(tweets => {
       tweets = tweets.map(r => ({
         ...r.dataValues,
+        replyCount: r.dataValues.Replies.length
       }))
+      console.log(tweets)
       User.findAll({
         include: [{ model: User, as: 'Followers' }]
       }).then(users => {
@@ -24,7 +26,6 @@ const tweetController = {
         }))
         users = users.sort((a, b) => b.totalFollowers - a.totalFollowers)
         topFollowers = users.slice(0, 10)
-        console.log(topFollowers)
         res.render('tweets', { tweets: tweets, topFollowers: topFollowers })
       })
     }

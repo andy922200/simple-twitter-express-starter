@@ -17,7 +17,17 @@
             <p>{{this.description}}</p>
             <p>
               <a class="text-primary mr-3" href="/tweets/{{this.id}}/replies">Reply</a>
-              <a class="text-danger" href="#">Like</a>
+              {{#if this.isLiked}}
+              <form action="/tweets/{{this.id}}/unlike" method="POST" style="display: inline-block">
+                <button type="submit" class="btn btn-link" style="text-decoration:none"><i
+                    class=" fas fa-thumbs-up"></i>({{this.totalLikedUsers}})</button>
+              </form>
+              {{else}}
+              <form action="/tweets/{{this.id}}/like" method="POST" style="display:inline-block">
+                <button type="submit" class="btn btn-link" style="text-decoration:none"><i
+                    class="far fa-thumbs-up"></i>({{this.totalLikedUsers}})</button>
+              </form>
+              {{/if}}
             </p>
           </td>
         </tr>

@@ -118,7 +118,7 @@ const userController = {
     else {
       return Followship.create({
         followerId: req.user.id,
-        followingId: req.body.id
+        followingId: req.params.followingId
       })
         .then((followship) => {
           return res.redirect('back')

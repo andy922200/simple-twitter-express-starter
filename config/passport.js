@@ -36,9 +36,12 @@ passport.serializeUser((user, cb) => {
   cb(null, user.id)
 })
 passport.deserializeUser((id, cb) => {
-  User.findByPk(id, { include: Tweet }).then(user => {
-    return cb(null, user)
-  })
+  User.findByPk(id,
+    {
+      include: [{ model: Tweet }, { model: db.Tweet, as: 'LikedTweets' }, { model: db.User, as: 'Followings' }]
+    }).then(user => {
+      return cb(null, user)
+    })
 })
 
 module.exports = passport

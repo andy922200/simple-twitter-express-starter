@@ -6,13 +6,28 @@ const Reply = db.Reply
 
 const tweetController = {
   getTweets: (req, res) => {
-    Tweet.findAll({ include: [User], order: [['createdAt', 'DESC']] }).then(
-      tweets => {
-        const data = tweets.map(r => ({
-          ...r.dataValues
+    Tweet.findAll({
+      include: [User],
+      order: [['createdAt', 'DESC']]
+    }).then(tweets => {
+      tweets = tweets.map(r => ({
+        ...r.dataValues,
+      }))
+      User.findAll({
+        include: [{ model: User, as: 'Followers' }]
+      }).then(users => {
+        users = users.map(r => ({
+          ...r.dataValues,
+          introduction: r.dataValues.introduction.substring(0, 50),
+          isFollowed: req.user.Followings.map(d => d.id).includes(r.id),
+          totalFollowers: r.dataValues.Followers.length
         }))
-        res.render('tweets', { tweets: data })
-      }
+        users = users.sort((a, b) => b.totalFollowers - a.totalFollowers)
+        topFollowers = users.slice(0, 10)
+        console.log(topFollowers)
+        res.render('tweets', { tweets: tweets, topFollowers: topFollowers })
+      })
+    }
     )
   },
   postTweet: (req, res) => {

@@ -148,21 +148,19 @@ const userController = {
         return res.redirect('back')
       })
     })
-  }
+  },
 
   addFollowing: (req, res) => {
     if (req.user.id === Number(req.body.id)) {
-      req.flash('error_messages', "無法追蹤自己")
+      req.flash('error_messages', '無法追蹤自己')
       return res.redirect('back')
-    }
-    else {
+    } else {
       return Followship.create({
         followerId: req.user.id,
         followingId: req.body.id
+      }).then(followship => {
+        return res.redirect('back')
       })
-        .then((followship) => {
-          return res.redirect('back')
-        })
     }
   },
 
@@ -172,16 +170,12 @@ const userController = {
         followerId: req.user.id,
         followingId: req.params.followingId
       }
-    })
-      .then((followship) => {
-        followship.destroy()
-          .then((followship) => {
-            return res.redirect('back')
-          })
+    }).then(followship => {
+      followship.destroy().then(followship => {
+        return res.redirect('back')
       })
-
+    })
   }
-
 }
 
 module.exports = userController

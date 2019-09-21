@@ -30,10 +30,10 @@
           <img src="{{this.User.avatar}}" alt="{{this.User.name}}" style="width: 100px">
         </div>
         <div class="col-md-9">
-          {{this.id}}
           <p><a href="/users/{{this.User.id}}/tweets">@{{this.User.name}}</a> {{moment this.createdAt}}</p>
           <p>{{this.description}}</p>
-          <span class="text-primary mr-3">Reply</span>
+          <a class="text-primary mr-3" href="/tweets/{{this.id}}/replies"><i
+              class="far fa-comment"></i>({{this.replyCount}})</a>
           {{#if this.isLiked}}
           <form action="/tweets/{{this.id}}/unlike" method="POST" style="display: inline-block">
             <button type="submit" class="btn btn-link" style="text-decoration:none"><i
@@ -45,7 +45,6 @@
                 class="far fa-thumbs-up"></i>({{this.totalLikedUsers}})</button>
           </form>
           {{/if}}
-          {{moment this.Like.createdAt}}
         </div>
       </div>
     </div>

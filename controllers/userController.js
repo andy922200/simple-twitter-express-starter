@@ -3,6 +3,7 @@ const db = require('../models')
 const User = db.User
 const Tweet = db.Tweet
 const Like = db.Like
+const Reply = db.Reply
 const Followship = db.Followship
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
@@ -54,7 +55,10 @@ const userController = {
   getUser: (req, res) => {
     return User.findByPk(req.params.id, {
       include: [
-        { model: Tweet, include: [{ model: User, as: 'LikedUsers' }] },
+        {
+          model: Tweet,
+          include: [{ model: User, as: 'LikedUsers' }, { model: Reply }]
+        },
         { model: Tweet, as: 'LikedTweets' },
         { model: User, as: 'Followers' },
         { model: User, as: 'Followings' }
@@ -69,7 +73,8 @@ const userController = {
       const data = user.Tweets.map(tweet => ({
         ...tweet.dataValues,
         isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
-        totalLikedUsers: tweet.dataValues.LikedUsers.length
+        totalLikedUsers: tweet.dataValues.LikedUsers.length,
+        replyCount: tweet.dataValues.Replies.length
       }))
       return res.render('profile', {
         profile: user,
@@ -181,13 +186,17 @@ const userController = {
       include: [
         {
           model: Tweet,
-          include: [{ model: User, through: Like, as: 'LikedUsers' }]
+          include: [{ model: User, as: 'LikedUsers' }]
         },
         {
           model: Tweet,
           through: Like,
           as: 'LikedTweets',
-          include: [User, { model: User, through: Like, as: 'LikedUsers' }]
+          include: [
+            User,
+            { model: User, through: Like, as: 'LikedUsers' },
+            { model: Reply }
+          ]
         },
         { model: User, as: 'Followers' },
         { model: User, as: 'Followings' }
@@ -202,7 +211,8 @@ const userController = {
       const likedTweets = user.LikedTweets.map(tweet => ({
         ...tweet.dataValues,
         isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
-        totalLikedUsers: tweet.dataValues.LikedUsers.length
+        totalLikedUsers: tweet.dataValues.LikedUsers.length,
+        replyCount: tweet.dataValues.Replies.length
       }))
       return res.render('likes', {
         profile: user,

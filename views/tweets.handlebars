@@ -1,10 +1,10 @@
 <!--views/tweets.handlebars-->
-<div class="row">
+<div class="row mt-4">
   <div class="left col-md-8">
     <form action="/tweets" method="POST">
       <textarea class="form-control rounded-0" name="newTweet" id="newTweet" rows="5" maxlength="140" required
         placeholder="What's on your mind?"></textarea>
-      <button class="btn btn-primary float-right" type="submit">Tweet</button>
+      <button class="btn btn-primary float-right mt-3" type="submit">Tweet</button>
     </form>
     <table class="table table-sm table-borderless">
       <tbody>
@@ -50,10 +50,10 @@
 
           {{#if this.isFollowed }}
           <form action="/followships/{{this.id}}?_method=DELETE" method="POST"><button type="submit"
-              class="btn btn-danger">取消追蹤</button></form>
+              class="btn btn-danger float-right">取消追蹤</button></form>
           {{else}}
           <form action="/followships" method="POST">
-            <button type="submit" class="btn btn-primary" name="id" value={{this.id}}>追蹤</button>
+            <button type="submit" class="btn btn-primary float-right" name="id" value={{this.id}}>追蹤</button>
           </form>
           {{/if}}
 

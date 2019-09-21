@@ -152,17 +152,15 @@ const userController = {
 
   addFollowing: (req, res) => {
     if (req.user.id === Number(req.body.id)) {
-      req.flash('error_messages', "無法追蹤自己")
+      req.flash('error_messages', '無法追蹤自己')
       return res.redirect('back')
-    }
-    else {
+    } else {
       return Followship.create({
         followerId: req.user.id,
         followingId: req.body.id
+      }).then(followship => {
+        return res.redirect('back')
       })
-        .then((followship) => {
-          return res.redirect('back')
-        })
     }
   },
 
@@ -172,16 +170,50 @@ const userController = {
         followerId: req.user.id,
         followingId: req.params.followingId
       }
-    })
-      .then((followship) => {
-        followship.destroy()
-          .then((followship) => {
-            return res.redirect('back')
-          })
+    }).then(followship => {
+      followship.destroy().then(followship => {
+        return res.redirect('back')
       })
-
+    })
+  },
+  getLikes: (req, res) => {
+    return User.findByPk(req.params.id, {
+      include: [
+        {
+          model: Tweet,
+          include: [{ model: User, through: Like, as: 'LikedUsers' }]
+        },
+        {
+          model: Tweet,
+          through: Like,
+          as: 'LikedTweets',
+          include: [User, { model: User, through: Like, as: 'LikedUsers' }]
+        },
+        { model: User, as: 'Followers' },
+        { model: User, as: 'Followings' }
+      ],
+      order: [[{ model: Tweet, as: 'LikedTweets' }, Like, 'createdAt', 'DESC']]
+    }).then(user => {
+      user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
+      const totalTweets = user.Tweets.length
+      const totalLiked = user.LikedTweets.length
+      const totalFollowers = user.Followers.length
+      const totalFollowings = user.Followings.length
+      const likedTweets = user.LikedTweets.map(tweet => ({
+        ...tweet.dataValues,
+        isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
+        totalLikedUsers: tweet.dataValues.LikedUsers.length
+      }))
+      return res.render('likes', {
+        profile: user,
+        totalLiked,
+        totalFollowers,
+        totalFollowings,
+        totalTweets,
+        likedTweets
+      })
+    })
   }
-
 }
 
 module.exports = userController

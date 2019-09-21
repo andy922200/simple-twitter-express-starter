@@ -180,7 +180,58 @@ const userController = {
           })
       })
 
-  }
+  },
+
+  getFollowings: (req, res) => {
+    return User.findByPk(req.params.id, {
+      include: [{ model: User, as: 'Followings' }, { model: Tweet, as: 'LikedTweets' },
+      { model: User, as: 'Followers' }, Tweet],
+      order: [[{ model: User, as: 'Followings' }, 'createdAt', 'DESC']]
+    }).then(user => {
+      const totalTweets = user.Tweets.length
+      const totalLiked = user.LikedTweets.length
+      const totalFollowers = user.Followers.length
+      const totalFollowings = user.Followings.length
+      user.Followings = user.Followings.map(r => ({
+        ...r.dataValues,
+        introduction: r.dataValues.introduction ? r.dataValues.introduction.substring(0, 50) : r.dataValues.introduction,
+        isFollowed: req.user.Followings.map(r => r.id).includes(r.dataValues.id)
+      }))
+      // user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
+      return res.render('followings', {
+        profile: user,
+        totalLiked,
+        totalFollowers,
+        totalFollowings,
+        totalTweets
+      })
+    })
+  },
+
+  getFollowers: (req, res) => {
+    return User.findByPk(req.params.id, {
+      include: [{ model: User, as: 'Followers' }, { model: Tweet, as: 'LikedTweets' },
+      { model: User, as: 'Followings' }, Tweet],
+      order: [[{ model: User, as: 'Followers' }, 'createdAt', 'DESC']]
+    }).then(user => {
+      const totalTweets = user.Tweets.length
+      const totalLiked = user.LikedTweets.length
+      const totalFollowers = user.Followers.length
+      const totalFollowings = user.Followings.length
+      user.Followers = user.Followers.map(r => ({
+        ...r.dataValues,
+        introduction: r.dataValues.introduction ? r.dataValues.introduction.substring(0, 50) : r.dataValues.introduction,
+        isFollowed: req.user.Followings.map(r => r.id).includes(r.dataValues.id)
+      }))
+      // user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
+      return res.render('followers', {
+        profile: user, totalLiked,
+        totalFollowers,
+        totalFollowings,
+        totalTweets
+      })
+    })
+  },
 
 }
 

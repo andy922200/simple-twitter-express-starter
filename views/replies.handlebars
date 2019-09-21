@@ -13,8 +13,8 @@
       <button type="submit" class="btn btn-danger">Unfollow</button>
     </form>
     {{else}}
-    <form action="/followships/{{tweetUser.id}}" method="POST" style="display: contents;">
-      <button type="submit" class="btn btn-primary">Follow</button>
+    <form action="/followships" method="POST" style="display: contents;">
+      <button type="submit" class="btn btn-primary" name="id" value="{{tweetUser.id}}">Follow</button>
     </form>
     {{/if}}
   </div>

@@ -7,17 +7,30 @@ const Reply = db.Reply
 const tweetController = {
   getTweets: (req, res) => {
     Tweet.findAll({
-      include: [{ model: User, as: 'LikedUsers' }],
+      include: [User, Reply,{ model: User, as: 'LikedUsers' }],
       order: [['createdAt', 'DESC']]
     }).then(tweets => {
-      const data = tweets.map(r => ({
+      tweets = tweets.map(r => ({
         ...r.dataValues,
         isLiked: req.user.LikedTweets.map(d => d.id).includes(r.id),
-        totalLikedUsers: r.dataValues.LikedUsers.length
+        totalLikedUsers: r.dataValues.LikedUsers.length,
+        replyCount: r.dataValues.Replies.length
       }))
-      // console.log(tweets[1])
-      res.render('tweets', { tweets: data })
-    })
+      User.findAll({
+        include: [{ model: User, as: 'Followers' }]
+      }).then(users => {
+        users = users.map(r => ({
+          ...r.dataValues,
+          introduction: r.dataValues.introduction.substring(0, 50),
+          isFollowed: req.user.Followings.map(d => d.id).includes(r.id),
+          totalFollowers: r.dataValues.Followers.length
+        }))
+        users = users.sort((a, b) => b.totalFollowers - a.totalFollowers)
+        topFollowers = users.slice(0, 10)
+        res.render('tweets', { tweets: tweets, topFollowers: topFollowers })
+      })
+    }
+    )
   },
   postTweet: (req, res) => {
     if (!req.body.newTweet) {
@@ -42,7 +55,10 @@ const tweetController = {
       const tweet = result.dataValues
       const tweetUser = tweet.User.dataValues
       const reply = result.Replies
-      return res.render('replies', { reply: reply, tweet: tweet, tweetUser: tweetUser })
+      const isFollowed = req.user.Followings.map(d => d.id).includes(tweetUser.id)
+      const replyCount = reply.length
+      console.log(replyCount)
+      return res.render('replies', { reply: reply, tweet: tweet, tweetUser: tweetUser, isFollowed: isFollowed, replyCount: replyCount })
     })
   },
   postReply: (req, res) => {

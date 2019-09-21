@@ -1,7 +1,6 @@
 <!--views/tweets.handlebars-->
 <div class="row">
   <div class="left col-md-8">
-    <h2>Tweets Left</h2>
     <form action="/tweets" method="POST">
       <textarea class="form-control rounded-0" name="newTweet" id="newTweet" rows="5" maxlength="140" required
         placeholder="What's on your mind?"></textarea>
@@ -11,12 +10,12 @@
       <tbody>
         {{#each tweets}}
         <tr>
-          <td>{{this.id}}</td>
+          <td><img src="{{this.User.avatar}}" alt="{{this.User.name}}" style="width: 100px"></td>
           <td>
-            <p>{{moment this.createdAt}}</p>
+            <p><a href="/users/{{this.User.id}}/tweets">@{{this.User.name}}</a> {{moment this.createdAt}}</p>
             <p>{{this.description}}</p>
             <p>
-              <a class="text-primary mr-3" href="/tweets/{{this.id}}/replies">Reply</a>
+              <a class="text-primary mr-3" href="/tweets/{{this.id}}/replies">Reply({{this.replyCount}})</a>
               {{#if this.isLiked}}
               <form action="/tweets/{{this.id}}/unlike" method="POST" style="display: inline-block">
                 <button type="submit" class="btn btn-link" style="text-decoration:none"><i
@@ -37,6 +36,29 @@
   </div>
 
   <div class="right col-md-4">
-    <h3>Tweets Right</h3>
+    <h3>Popular</h3>
+    {{#each topFollowers}}
+    <div class="card mb-3">
+      <div class="card-body row">
+        <div class="col-md-3">
+          <img src="{{this.avatar}}" alt="{{this.name}}" style="width: 50px">
+        </div>
+        <div class="col-md-9">
+          <p><a href="/users/{{this.id}}/tweets">@{{this.name}}</a></p>
+          <p>{{this.introduction}}</p>
+
+          {{#if this.isFollowed }}
+          <form action="/followships/{{this.id}}?_method=DELETE" method="POST"><button type="submit"
+              class="btn btn-danger">取消追蹤</button></form>
+          {{else}}
+          <form action="/followships" method="POST">
+            <button type="submit" class="btn btn-primary" name="id" value={{this.id}}>Follow</button>
+          </form>
+          {{/if}}
+
+        </div>
+      </div>
+    </div>
+    {{/each}}
   </div>
 </div>

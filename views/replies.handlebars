@@ -28,8 +28,8 @@
         <div class="col-md-9">
           <p><a href="/users/{{tweetUser.id}}/tweets">@{{tweetUser.name}}</a> {{moment tweet.createdAt}}</p>
           <p>{{tweet.description}}</p>
-          <span class="text-primary mr-3">Reply({{replyCount}})</span>
-          <span class="text-danger">like</span>
+          <span><i class="far fa-comment"></i>({{replyCount}})</span>
+          <span><i class="far fa-thumbs-up"></i></span>
         </div>
       </div>
     </div>

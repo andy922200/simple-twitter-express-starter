@@ -14,8 +14,9 @@
           <td>
             <p><a href="/users/{{this.User.id}}/tweets">@{{this.User.name}}</a> {{moment this.createdAt}}</p>
             <p>{{this.description}}</p>
-            <p>
-              <a class="text-primary mr-3" href="/tweets/{{this.id}}/replies">Reply({{this.replyCount}})</a>
+            <span>
+              <a class="text-primary mr-3" href="/tweets/{{this.id}}/replies"><i
+                  class="far fa-comment"></i>({{this.replyCount}})</a>
               {{#if this.isLiked}}
               <form action="/tweets/{{this.id}}/unlike" method="POST" style="display: inline-block">
                 <button type="submit" class="btn btn-link" style="text-decoration:none"><i
@@ -27,7 +28,7 @@
                     class="far fa-thumbs-up"></i>({{this.totalLikedUsers}})</button>
               </form>
               {{/if}}
-            </p>
+            </span>
           </td>
         </tr>
         {{/each}}
@@ -52,7 +53,7 @@
               class="btn btn-danger">取消追蹤</button></form>
           {{else}}
           <form action="/followships" method="POST">
-            <button type="submit" class="btn btn-primary" name="id" value={{this.id}}>Follow</button>
+            <button type="submit" class="btn btn-primary" name="id" value={{this.id}}>追蹤</button>
           </form>
           {{/if}}
 

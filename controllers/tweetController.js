@@ -54,7 +54,9 @@ const tweetController = {
       const tweetUser = tweet.User.dataValues
       const reply = result.Replies
       const isFollowed = req.user.Followings.map(d => d.id).includes(tweetUser.id)
-      return res.render('replies', { reply: reply, tweet: tweet, tweetUser: tweetUser, isFollowed: isFollowed })
+      const replyCount = reply.length
+      console.log(replyCount)
+      return res.render('replies', { reply: reply, tweet: tweet, tweetUser: tweetUser, isFollowed: isFollowed, replyCount: replyCount })
     })
   },
   postReply: (req, res) => {

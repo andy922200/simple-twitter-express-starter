@@ -28,7 +28,7 @@
         <div class="col-md-9">
           <p><a href="/users/{{tweetUser.id}}/tweets">@{{tweetUser.name}}</a> {{moment tweet.createdAt}}</p>
           <p>{{tweet.description}}</p>
-          <span class="text-primary mr-3">Reply</span>
+          <span class="text-primary mr-3">Reply({{replyCount}})</span>
           <span class="text-danger">like</span>
         </div>
       </div>
@@ -43,8 +43,6 @@
         <div class="col-md-9">
           <p><a href="/users/{{this.User.id}}/tweets">@{{this.User.name}}</a> {{moment this.createdAt}}</p>
           <p>{{this.comment}}</p>
-          <span class="text-primary mr-3">Reply</span>
-          <span class="text-danger">like</span>
         </div>
       </div>
     </div>

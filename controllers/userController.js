@@ -111,7 +111,7 @@ const userController = {
   },
 
   addFollowing: (req, res) => {
-    if (req.user.id === req.body.id) {
+    if (req.user.id === Number(req.params.followingId)) {
       req.flash('error_messages', "無法追蹤自己")
       return res.redirect('back')
     }

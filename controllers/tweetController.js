@@ -36,9 +36,7 @@ const tweetController = {
     }).then(result => {
       const tweet = result.dataValues
       const tweetUser = tweet.User.dataValues
-      const reply = result.Replies.map(r => ({
-        ...r.dataValues
-      }))
+      const reply = result.Replies
       return res.render('replies', { reply: reply, tweet: tweet, tweetUser: tweetUser })
     })
   },

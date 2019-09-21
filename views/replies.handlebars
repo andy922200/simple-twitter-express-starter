@@ -11,7 +11,7 @@
           <img src="{{tweetUser.avatar}}" alt="{{tweetUser.name}}" style="width: 100px">
         </div>
         <div class="col-md-9">
-          <p><a href="/users/{{tweetUser.id}}/tweets">@{{tweetUser.name}}</a> {{moment this.createdAt}}</p>
+          <p><a href="/users/{{tweetUser.id}}/tweets">@{{tweetUser.name}}</a> {{moment tweet.createdAt}}</p>
           <p>{{tweet.description}}</p>
           <span class="text-primary mr-3">Reply</span>
           <span class="text-danger">like</span>

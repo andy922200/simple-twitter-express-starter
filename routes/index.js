@@ -28,6 +28,8 @@ module.exports = (app, passport) => {
   })
   app.get('/tweets', authenticated, tweetController.getTweets)
   app.post('/tweets', authenticated, tweetController.postTweet)
+  app.get('/tweets/:id/replies', authenticated, tweetController.getTweetReplies)
+  app.post('/tweets/:id/replies', authenticated, tweetController.postReply)
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
   // 後台
@@ -62,4 +64,6 @@ module.exports = (app, passport) => {
   )
   app.post('/tweets/:id/like', authenticated, userController.addLike)
   app.post('/tweets/:id/unlike', authenticated, userController.removeLike)
+  app.post('/followships', authenticated, userController.addFollowing)
+  app.delete('/followships/:followingId', authenticated, userController.removeFollowing)
 }

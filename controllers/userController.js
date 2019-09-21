@@ -3,6 +3,7 @@ const db = require('../models')
 const User = db.User
 const Tweet = db.Tweet
 const Like = db.Like
+const Followship = db.Followship
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
@@ -60,6 +61,7 @@ const userController = {
       ],
       order: [[{ model: Tweet }, 'createdAt', 'DESC']]
     }).then(user => {
+      user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
       const totalTweets = user.Tweets.length
       const totalLiked = user.LikedTweets.length
       const totalFollowers = user.Followers.length
@@ -129,6 +131,7 @@ const userController = {
           })
       })
   },
+
   addLike: (req, res) => {
     return Like.create({
       UserId: req.user.id,
@@ -146,6 +149,39 @@ const userController = {
       })
     })
   }
+
+  addFollowing: (req, res) => {
+    if (req.user.id === req.body.id) {
+      req.flash('error_messages', "無法追蹤自己")
+      return res.redirect('back')
+    }
+    else {
+      return Followship.create({
+        followerId: req.user.id,
+        followingId: req.body.id
+      })
+        .then((followship) => {
+          return res.redirect('back')
+        })
+    }
+  },
+
+  removeFollowing: (req, res) => {
+    return Followship.findOne({
+      where: {
+        followerId: req.user.id,
+        followingId: req.params.followingId
+      }
+    })
+      .then((followship) => {
+        followship.destroy()
+          .then((followship) => {
+            return res.redirect('back')
+          })
+      })
+
+  }
+
 }
 
 module.exports = userController

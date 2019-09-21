@@ -13,9 +13,10 @@
         <tr>
           <td>{{this.id}}</td>
           <td>
-            <p>{{moment this.updatedAt}}</p>
+            <p>{{moment this.createdAt}}</p>
             <p>{{this.description}}</p>
             <p>
+              <a class="text-primary mr-3" href="/tweets/{{this.id}}/replies">Reply</a>
               {{#if this.isLiked}}
               <form action="/tweets/{{this.id}}/unlike" method="POST" style="display: inline-block">
                 <button type="submit" class="btn btn-link" style="text-decoration:none"><i

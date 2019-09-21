@@ -54,4 +54,6 @@ module.exports = (app, passport) => {
     upload.single('avatar'),
     userController.putUser
   )
+  app.post('/followships', authenticated, userController.addFollowing)
+  app.delete('/followships/:followingId', authenticated, userController.removeFollowing)
 }

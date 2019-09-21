@@ -15,7 +15,7 @@
       <button type="submit" class="btn btn-danger" name="id" value={{profile.id}}>Unfollow</button>
     </form>
     {{else}}
-    <form action="/followships/" method="POST" style="display: contents;">
+    <form action="/followships" method="POST" style="display: contents;">
       <button type="submit" class="btn btn-primary" name="id" value={{profile.id}}>Follow</button>
     </form>
     {{/if}}

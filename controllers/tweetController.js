@@ -49,8 +49,13 @@ const tweetController = {
   },
   getTweetReplies: (req, res) => {
     Tweet.findByPk(req.params.id, {
-      include: [User, { model: Reply, include: [User] }]
+      include: [
+        User,
+        { model: User, as: 'LikedUsers' },
+        { model: Reply, include: [User] }
+      ]
     }).then(result => {
+      console.log(result)
       const tweet = result.dataValues
       const tweetUser = tweet.User.dataValues
       const reply = result.Replies
@@ -58,12 +63,16 @@ const tweetController = {
         tweetUser.id
       )
       const replyCount = reply.length
+      const totalLikedUsers = result.LikedUsers.length
+      const isLiked = req.user.LikedTweets.map(d => d.id).includes(result.id)
       return res.render('replies', {
         reply: reply,
         tweet: tweet,
         tweetUser: tweetUser,
         isFollowed: isFollowed,
-        replyCount: replyCount
+        replyCount: replyCount,
+        totalLikedUsers,
+        isLiked
       })
     })
   },

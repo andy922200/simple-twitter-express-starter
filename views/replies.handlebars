@@ -1,7 +1,22 @@
 <!--views/replies.handlebars-->
 <div class="row mt-3">
   <div class="col-md-4 display-flex justify-content-center">
-    <h3>Left</h3>
+    <img src="{{tweetUser.avatar}}" alt="{{tweetUser.name}}" style="width: 250px;margin-bottom: 25px;">
+    <h3>{{tweetUser.name}}</h3>
+    <p>{{tweetUser.introduction}}</p>
+    <p>Tweets</p>
+    <p><a href="/users/{{tweetUser.id}}/followings">Following</a></p>
+    <p><a href="/users/{{tweetUser.id}}/followers">Follower</a></p>
+    <p><a href="/users/{{tweetUser.id}}/likes">Like</a></p>
+    {{#if isFollowed}}
+    <form action="/followships/{{tweetUser.id}}/?_method=DELETE" method="POST" style="display: contents;">
+      <button type="submit" class="btn btn-danger">Unfollow</button>
+    </form>
+    {{else}}
+    <form action="/followships/{{tweetUser.id}}" method="POST" style="display: contents;">
+      <button type="submit" class="btn btn-primary">Follow</button>
+    </form>
+    {{/if}}
   </div>
   <div class="col-md-8">
     <p>Tweets</p>

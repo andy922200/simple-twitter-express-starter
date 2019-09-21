@@ -14,7 +14,6 @@ const tweetController = {
         ...r.dataValues,
         replyCount: r.dataValues.Replies.length
       }))
-      console.log(tweets)
       User.findAll({
         include: [{ model: User, as: 'Followers' }]
       }).then(users => {
@@ -54,7 +53,8 @@ const tweetController = {
       const tweet = result.dataValues
       const tweetUser = tweet.User.dataValues
       const reply = result.Replies
-      return res.render('replies', { reply: reply, tweet: tweet, tweetUser: tweetUser })
+      const isFollowed = req.user.Followings.map(d => d.id).includes(tweetUser.id)
+      return res.render('replies', { reply: reply, tweet: tweet, tweetUser: tweetUser, isFollowed: isFollowed })
     })
   },
   postReply: (req, res) => {

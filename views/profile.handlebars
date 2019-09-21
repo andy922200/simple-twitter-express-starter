@@ -12,10 +12,10 @@
     {{else}}
     {{#if profile.isFollowed}}
     <form action="/followships/{{profile.id}}/?_method=DELETE" method="POST" style="display: contents;">
-      <button type="submit" class="btn btn-primary" name="id" value={{profile.id}}>Unfollow</button>
+      <button type="submit" class="btn btn-danger" name="id" value={{profile.id}}>Unfollow</button>
     </form>
     {{else}}
-    <form action="/followships" method="POST" style="display: contents;">
+    <form action="/followships/{{profile.id}}" method="POST" style="display: contents;">
       <button type="submit" class="btn btn-primary" name="id" value={{profile.id}}>Follow</button>
     </form>
     {{/if}}
@@ -29,7 +29,7 @@
           <img src="{{../profile.avatar}}" alt="{{../profile.name}}" style="width: 100px">
         </div>
         <div class="col-md-9">
-          <p><a href="/users/{{../user.id}}/tweets">@{{../profile.name}}</a> {{moment this.createdAt}}</p>
+          <p><a href="/users/{{../profile.id}}/tweets">@{{../profile.name}}</a> {{moment this.createdAt}}</p>
           <p>{{this.description}}</p>
           <span class="text-primary mr-3">Reply</span>
           {{#if this.isLiked}}

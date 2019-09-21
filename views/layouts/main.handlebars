@@ -18,7 +18,11 @@
   {{!-- Navbar --}}
   <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
     <a class="navbar-brand" href="/">LOGO</a>
-    <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse" id="navbarNavAltMarkup">
       <ul class="navbar-nav mr-auto">
       </ul>
       <div>
@@ -26,8 +30,9 @@
         <a href="/admin/tweets" style="color: white;margin-right: 10px;">Admin 後台</a>
         {{/ifCond}}
         {{#if user}}
-        <img src="{{user.avatar}}" alt="user image" style="width: 50px; height: 50px">
-        <a href="/users/{{user.id}}/tweets" style="color: white;margin-right: 10px;">{{user.name}}</a>
+        <a href="/users/{{user.id}}/tweets" style="color: white;margin-right: 10px;">
+          <img src="{{user.avatar}}" alt="{{user.name}}" style="width: 50px; height: 50px">
+        </a>
         <a href="/logout"><button class="btn btn-outline-success my-2 my-sm-0">LogOut</button></a>
         {{/if}}
       </div>

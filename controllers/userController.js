@@ -148,7 +148,7 @@ const userController = {
         return res.redirect('back')
       })
     })
-  }
+  },
 
   addFollowing: (req, res) => {
     if (req.user.id === req.body.id) {

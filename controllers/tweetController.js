@@ -6,17 +6,18 @@ const Reply = db.Reply
 
 const tweetController = {
   getTweets: (req, res) => {
-    Tweet.findAll({ include: [User] })
-      .then(tweets => {
+    Tweet.findAll({ include: [User], order: [['createdAt', 'DESC']] }).then(
+      tweets => {
         const data = tweets.map(r => ({
           ...r.dataValues
         }))
         res.render('tweets', { tweets: data })
-      })
+      }
+    )
   },
   postTweet: (req, res) => {
     if (!req.body.newTweet) {
-      req.flash('error_messages', "請記得填入訊息")
+      req.flash('error_messages', '請記得填入訊息')
       return res.redirect('back')
     }
     if (req.body.newTweet.length > 140) {

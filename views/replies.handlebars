@@ -4,10 +4,10 @@
     <img src="{{tweetUser.avatar}}" alt="{{tweetUser.name}}" style="width: 250px;margin-bottom: 25px;">
     <h3>{{tweetUser.name}}</h3>
     <p>{{tweetUser.introduction}}</p>
-    <p>Tweets</p>
-    <p><a href="/users/{{tweetUser.id}}/followings">Following</a></p>
-    <p><a href="/users/{{tweetUser.id}}/followers">Follower</a></p>
-    <p><a href="/users/{{tweetUser.id}}/likes">Like</a></p>
+    <p>Tweets({{totalTweets}})</p>
+    <p><a href="/users/{{tweetUser.id}}/followings">Following({{totalFollowings}})</a></p>
+    <p><a href="/users/{{tweetUser.id}}/followers">Follower({{totalFollowers}})</a></p>
+    <p><a href="/users/{{tweetUser.id}}/likes">Like({{totalLiked}})</a></p>
     {{#if isFollowed}}
     <form action="/followships/{{tweetUser.id}}/?_method=DELETE" method="POST" style="display: contents;">
       <button type="submit" class="btn btn-danger">Unfollow</button>
@@ -29,7 +29,17 @@
           <p><a href="/users/{{tweetUser.id}}/tweets">@{{tweetUser.name}}</a> {{moment tweet.createdAt}}</p>
           <p>{{tweet.description}}</p>
           <span><i class="far fa-comment"></i>({{replyCount}})</span>
-          <span><i class="far fa-thumbs-up"></i></span>
+          {{#if LikedTweet.isLiked}}
+          <form action="/tweets/{{LikedTweet.id}}/unlike" method="POST" style="display: inline-block">
+            <button type="submit" class="btn btn-link" style="text-decoration:none"><i
+                class=" fas fa-thumbs-up"></i>({{LikedTweet.totalLikedUsers}})</button>
+          </form>
+          {{else}}
+          <form action="/tweets/{{LikedTweet.id}}/like" method="POST" style="display:inline-block">
+            <button type="submit" class="btn btn-link" style="text-decoration:none"><i
+                class="far fa-thumbs-up"></i>({{LikedTweet.totalLikedUsers}})</button>
+          </form>
+          {{/if}}
         </div>
       </div>
     </div>

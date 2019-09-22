@@ -7,7 +7,7 @@ const Reply = db.Reply
 const tweetController = {
   getTweets: (req, res) => {
     Tweet.findAll({
-      include: [User, Reply,{ model: User, as: 'LikedUsers' }],
+      include: [User, Reply, { model: User, as: 'LikedUsers' }],
       order: [['createdAt', 'DESC']]
     }).then(tweets => {
       tweets = tweets.map(r => ({
@@ -50,15 +50,44 @@ const tweetController = {
   },
   getTweetReplies: (req, res) => {
     Tweet.findByPk(req.params.id, {
-      include: [User, { model: Reply, include: [User] }]
+      include: [User, { model: Reply, include: [User] }],
+      order: [[{ model: Reply }, 'createdAt', 'DESC']]
     }).then(result => {
       const tweet = result.dataValues
       const tweetUser = tweet.User.dataValues
       const reply = result.Replies
       const isFollowed = req.user.Followings.map(d => d.id).includes(tweetUser.id)
       const replyCount = reply.length
-      console.log(replyCount)
-      return res.render('replies', { reply: reply, tweet: tweet, tweetUser: tweetUser, isFollowed: isFollowed, replyCount: replyCount })
+      User.findByPk(tweetUser.id, {
+        include: [
+          { model: Tweet, as: 'LikedTweets' },
+          { model: User, as: 'Followers' },
+          { model: User, as: 'Followings' },
+          { model: Tweet, include: [{ model: User, as: 'LikedUsers' }], where: { 'description': tweet.description } }
+        ]
+      }).then(user => {
+        const totalTweets = user.Tweets.length
+        const totalLiked = user.LikedTweets.length
+        const totalFollowers = user.Followers.length
+        const totalFollowings = user.Followings.length
+        const data = user.Tweets.map(r => ({
+          ...r.dataValues,
+          isLiked: req.user.LikedTweets.map(d => d.id).includes(r.id),
+          totalLikedUsers: r.dataValues.LikedUsers.length
+        }))
+        return res.render('replies', {
+          reply: reply,
+          tweet: tweet,
+          tweetUser: tweetUser,
+          isFollowed: isFollowed,
+          replyCount: replyCount,
+          totalTweets: totalTweets,
+          totalLiked: totalLiked,
+          totalFollowers: totalFollowers,
+          totalFollowings: totalFollowings,
+          LikedTweet: data[0]
+        })
+      })
     })
   },
   postReply: (req, res) => {

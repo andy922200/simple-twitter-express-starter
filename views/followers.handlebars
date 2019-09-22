@@ -1,0 +1,56 @@
+<div class="row mt-3">
+  <div class="col-md-4 display-flex justify-content-center">
+    <img src="{{profile.avatar}}" alt="{{profile.name}}" style="width: 250px;margin-bottom: 25px;">
+    <h3>{{profile.name}}</h3>
+    <p>{{profile.introduction}}</p>
+    <p><a href="/users/{{profile.id}}/tweets">Tweets({{totalTweets}})</a></p>
+    <p><a href="/users/{{profile.id}}/followings">Following({{totalFollowings}})</a></p>
+    <p>Follower({{totalFollowers}})</p>
+    <p><a href="/users/{{profile.id}}/likes">Like({{totalLiked}})</a></p>
+    {{#ifCond profile.id user.id}}
+    <a href="/users/{{user.id}}/edit"><button class="btn btn-primary">Edit Profile</button></a>
+    {{else}}
+    {{#if profile.isFollowed}}
+    <form action="/followships/{{profile.id}}/?_method=DELETE" method="POST" style="display: contents;">
+      <button type="submit" class="btn btn-danger" name="id" value={{profile.id}}>Unfollow</button>
+    </form>
+    {{else}}
+    <form action="/followships/" method="POST" style="display: contents;">
+      <button type="submit" class="btn btn-primary" name="id" value={{profile.id}}>Follow</button>
+    </form>
+    {{/if}}
+    {{/ifCond}}
+  </div>
+  <div class="col-md-8 row">
+    {{#each profile.Followers}}
+    <div class="card ml-2 mb-1 col-md-5" style="height: 200px">
+      <div class="row p-1 pt-2">
+        <div class="col-md-4 p-0">
+          <img src="{{this.avatar}}" alt="{{this.name}}" style="width: 100%">
+        </div>
+        <div class="col-md-8 p-0">
+          <div class="card-body pt-0">
+            <h5><a href="/users/{{this.id}}/tweets">{{this.name}}</a></h5>
+            <p>{{this.introduction}}</p>
+
+            {{#ifCond this.id ../user.id}}
+            <a href="/users/{{user.id}}/edit"><button class="btn btn-primary">Edit Profile</button></a>
+            {{else}}
+            {{#if this.isFollowed}}
+            <form class="text-right" action="/followships/{{this.id}}/?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-primary" name="id" value={{this.id}}>Unfollow</button>
+            </form>
+            {{else}}
+            <form class="text-right" action="/followships" method="POST">
+              <button type="submit" class="btn btn-primary" name="id" value={{this.id}}>Follow</button>
+            </form>
+            {{/if}}
+            {{/ifCond}}
+
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</div>

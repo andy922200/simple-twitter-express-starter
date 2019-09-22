@@ -50,11 +50,12 @@ const tweetController = {
   },
   getTweetReplies: (req, res) => {
     Tweet.findByPk(req.params.id, {
-      include: [User, { model: User, as: 'LikedUsers' }, { model: Reply, include: [User] }],
+      include: [{ model: User, include: [Tweet] }, { model: User, as: 'LikedUsers' }, { model: Reply, include: [User] }],
       order: [[{ model: Reply }, 'createdAt', 'DESC']]
     }).then(result => {
       const tweet = result.dataValues
       const tweetUser = tweet.User.dataValues
+      const totalTweets = result.User.Tweets.length
       const reply = result.Replies
       const isFollowed = req.user.Followings.map(d => d.id).includes(tweetUser.id)
       const replyCount = reply.length
@@ -66,7 +67,6 @@ const tweetController = {
           { model: Tweet, where: { 'description': tweet.description } }
         ]
       }).then(user => {
-        const totalTweets = user.Tweets.length
         const totalLiked = user.LikedTweets.length
         const totalFollowers = user.Followers.length
         const totalFollowings = user.Followings.length

@@ -4,7 +4,7 @@
     <img src="{{tweetUser.avatar}}" alt="{{tweetUser.name}}" style="width: 250px;margin-bottom: 25px;">
     <h3>{{tweetUser.name}}</h3>
     <p>{{tweetUser.introduction}}</p>
-    <p>Tweets({{totalTweets}})</p>
+    <p><a href="/users/{{tweetUser.id}}/tweets">Tweets({{totalTweets}})</a></p>
     <p><a href="/users/{{tweetUser.id}}/followings">Following({{totalFollowings}})</a></p>
     <p><a href="/users/{{tweetUser.id}}/followers">Follower({{totalFollowers}})</a></p>
     <p><a href="/users/{{tweetUser.id}}/likes">Like({{totalLiked}})</a></p>

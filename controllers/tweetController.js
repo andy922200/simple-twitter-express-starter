@@ -10,12 +10,12 @@ const tweetController = {
       include: [User, Reply, { model: User, as: 'LikedUsers' }],
       order: [['createdAt', 'DESC']]
     }).then(tweets => {
-      const data = (tweets = tweets.map(r => ({
+      const data = tweets.map(r => ({
         ...r.dataValues,
         isLiked: req.user.LikedTweets.map(d => d.id).includes(r.id),
         totalLikedUsers: r.dataValues.LikedUsers.length,
         replyCount: r.dataValues.Replies.length
-      })))
+      }))
       User.findAll({
         include: [{ model: User, as: 'Followers' }]
       }).then(users => {

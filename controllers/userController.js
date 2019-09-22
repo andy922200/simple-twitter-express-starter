@@ -198,8 +198,6 @@ const userController = {
         introduction: r.dataValues.introduction ? r.dataValues.introduction.substring(0, 50) : r.dataValues.introduction,
         isFollowed: req.user.Followings.map(d => d.id).includes(r.dataValues.id)
       }))
-      //console.log(User.dataValues.id)
-      // user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
       return res.render('followings', {
         profile: user,
         userFollowed,

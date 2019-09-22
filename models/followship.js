@@ -3,8 +3,8 @@ module.exports = (sequelize, DataTypes) => {
   const Followship = sequelize.define(
     'Followship',
     {
-      FollowerId: DataTypes.INTEGER,
-      FollowingId: DataTypes.INTEGER
+      followerId: DataTypes.INTEGER,
+      followingId: DataTypes.INTEGER
     },
     {}
   )

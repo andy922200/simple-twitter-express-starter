@@ -10,24 +10,25 @@ const tweetController = {
       include: [User, Reply, { model: User, as: 'LikedUsers' }],
       order: [['createdAt', 'DESC']]
     }).then(tweets => {
-      tweets = tweets.map(r => ({
+      const data = (tweets = tweets.map(r => ({
         ...r.dataValues,
         isLiked: req.user.LikedTweets.map(d => d.id).includes(r.id),
         totalLikedUsers: r.dataValues.LikedUsers.length,
         replyCount: r.dataValues.Replies.length
-      }))
+      })))
       User.findAll({
         include: [{ model: User, as: 'Followers' }]
       }).then(users => {
-        users = users.map(r => ({
-          ...r.dataValues,
-          introduction: r.dataValues.introduction.substring(0, 50),
-          isFollowed: req.user.Followings.map(d => d.id).includes(r.id),
-          totalFollowers: r.dataValues.Followers.length
-        }))
-        users = users.sort((a, b) => b.totalFollowers - a.totalFollowers)
-        topFollowers = users.slice(0, 10)
-        res.render('tweets', { tweets: tweets, topFollowers: topFollowers })
+        const topFollowers = users
+          .map(r => ({
+            ...r.dataValues,
+            introduction: r.dataValues.introduction.substring(0, 50),
+            isFollowed: req.user.Followings.map(d => d.id).includes(r.id),
+            totalFollowers: r.dataValues.Followers.length
+          }))
+          .sort((a, b) => b.totalFollowers - a.totalFollowers)
+          .slice(0, 10)
+        res.render('tweets', { tweets: data, topFollowers: topFollowers })
       })
     })
   },

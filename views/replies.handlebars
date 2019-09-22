@@ -28,7 +28,7 @@
         <div class="col-md-9">
           <p><a href="/users/{{tweetUser.id}}/tweets">@{{tweetUser.name}}</a> {{moment tweet.createdAt}}</p>
           <p>{{tweet.description}}</p>
-          <span><i class="far fa-comment"></i>({{replyCount}})</span>
+          <span class="text-primary mr-3"><i class="far fa-comment"></i>({{replyCount}})</span>
           {{#if isLiked}}
           <form action="/tweets/{{tweet.id}}/unlike" method="POST" style="display: inline-block">
             <button type="submit" class="btn btn-link" style="text-decoration:none"><i
@@ -60,7 +60,7 @@
     <form action="/tweets/{{tweet.id}}/replies" method="POST">
       <textarea class="form-control rounded-0" name="newReply" id="newReply" rows="5" maxlength="140" required
         placeholder="What's on your mind?"></textarea>
-      <button class="btn btn-primary float-right" type="submit">Reply</button>
+      <button class="btn btn-primary float-right mt-3" type="submit">Reply</button>
     </form>
   </div>
 </div>

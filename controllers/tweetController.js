@@ -10,7 +10,7 @@ const tweetController = {
       include: [User, Reply, { model: User, as: 'LikedUsers' }],
       order: [['createdAt', 'DESC']]
     }).then(tweets => {
-      tweets = tweets.map(r => ({
+      const data = tweets.map(r => ({
         ...r.dataValues,
         isLiked: req.user.LikedTweets.map(d => d.id).includes(r.id),
         totalLikedUsers: r.dataValues.LikedUsers.length,
@@ -19,18 +19,18 @@ const tweetController = {
       User.findAll({
         include: [{ model: User, as: 'Followers' }]
       }).then(users => {
-        users = users.map(r => ({
-          ...r.dataValues,
-          introduction: r.dataValues.introduction.substring(0, 50),
-          isFollowed: req.user.Followings.map(d => d.id).includes(r.id),
-          totalFollowers: r.dataValues.Followers.length
-        }))
-        users = users.sort((a, b) => b.totalFollowers - a.totalFollowers)
-        topFollowers = users.slice(0, 10)
-        res.render('tweets', { tweets: tweets, topFollowers: topFollowers })
+        const topFollowers = users
+          .map(r => ({
+            ...r.dataValues,
+            introduction: r.dataValues.introduction.substring(0, 50),
+            isFollowed: req.user.Followings.map(d => d.id).includes(r.id),
+            totalFollowers: r.dataValues.Followers.length
+          }))
+          .sort((a, b) => b.totalFollowers - a.totalFollowers)
+          .slice(0, 10)
+        res.render('tweets', { tweets: data, topFollowers: topFollowers })
       })
-    }
-    )
+    })
   },
   postTweet: (req, res) => {
     if (!req.body.newTweet) {
@@ -38,7 +38,7 @@ const tweetController = {
       return res.redirect('back')
     }
     if (req.body.newTweet.length > 140) {
-      req.flash('error_messages', "請勿填入超過140個字")
+      req.flash('error_messages', '請勿填入超過140個字')
       return res.redirect('back')
     }
     return Tweet.create({
@@ -53,12 +53,16 @@ const tweetController = {
       include: [{ model: User, include: [Tweet] }, { model: User, as: 'LikedUsers' }, { model: Reply, include: [User] }],
       order: [[{ model: Reply }, 'createdAt', 'DESC']]
     }).then(result => {
+      console.log(result)
       const tweet = result.dataValues
       const tweetUser = tweet.User.dataValues
       const totalTweets = result.User.Tweets.length
       const reply = result.Replies
-      const isFollowed = req.user.Followings.map(d => d.id).includes(tweetUser.id)
+      const isFollowed = req.user.Followings.map(d => d.id).includes(
+        tweetUser.id
+      )
       const replyCount = reply.length
+
       User.findByPk(tweetUser.id, {
         include: [
           { model: Tweet, as: 'LikedTweets' },
@@ -90,19 +94,21 @@ const tweetController = {
   },
   postReply: (req, res) => {
     if (!req.body.newReply) {
-      req.flash('error_messages', "請記得填入訊息")
+      req.flash('error_messages', '請記得填入訊息')
       return res.redirect('back')
     }
     if (req.body.newReply.length > 140) {
-      req.flash('error_messages', "請勿填入超過140個字")
+      req.flash('error_messages', '請勿填入超過140個字')
       return res.redirect('back')
     }
     Tweet.findByPk(req.params.id)
-      .then(Reply.create({
-        UserId: req.user.id,
-        TweetId: req.params.id,
-        comment: req.body.newReply
-      }))
+      .then(
+        Reply.create({
+          UserId: req.user.id,
+          TweetId: req.params.id,
+          comment: req.body.newReply
+        })
+      )
       .then(reply => {
         req.flash('success_messages', '回覆成功！')
         return res.redirect(`/tweets/${req.params.id}/replies`)

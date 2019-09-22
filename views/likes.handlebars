@@ -12,7 +12,7 @@
     {{else}}
     {{#if profile.isFollowed}}
     <form action="/followships/{{profile.id}}/?_method=DELETE" method="POST" style="display: contents;">
-      <button type="submit" class="btn btn-danger" name="id" value={{profile.id}}>Unfollow</button>
+      <button type="submit" class="btn btn-primary" name="id" value={{profile.id}}>Unfollow</button>
     </form>
     {{else}}
     <form action="/followships" method="POST" style="display: contents;">
@@ -22,14 +22,15 @@
     {{/ifCond}}
   </div>
   <div class="col-md-8">
-    {{#each tweets}}
+    <h2>Like</h2>
+    {{#each likedTweets}}
     <div class="card mb-3">
       <div class="card-body row">
         <div class="col-md-3">
-          <img src="{{../profile.avatar}}" alt="{{../profile.name}}" style="width: 100px">
+          <img src="{{this.User.avatar}}" alt="{{this.User.name}}" style="width: 100px">
         </div>
         <div class="col-md-9">
-          <p><a href="/users/{{../profile.id}}/tweets">@{{../profile.name}}</a> {{moment this.createdAt}}</p>
+          <p><a href="/users/{{this.User.id}}/tweets">@{{this.User.name}}</a> {{moment this.createdAt}}</p>
           <p>{{this.description}}</p>
           <a class="text-primary mr-3" href="/tweets/{{this.id}}/replies"><i
               class="far fa-comment"></i>({{this.replyCount}})</a>

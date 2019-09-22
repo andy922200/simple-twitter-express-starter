@@ -3,6 +3,7 @@ const db = require('../models')
 const User = db.User
 const Tweet = db.Tweet
 const Like = db.Like
+const Reply = db.Reply
 const Followship = db.Followship
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
@@ -54,7 +55,10 @@ const userController = {
   getUser: (req, res) => {
     return User.findByPk(req.params.id, {
       include: [
-        { model: Tweet, include: [{ model: User, as: 'LikedUsers' }] },
+        {
+          model: Tweet,
+          include: [{ model: User, as: 'LikedUsers' }, { model: Reply }]
+        },
         { model: Tweet, as: 'LikedTweets' },
         { model: User, as: 'Followers' },
         { model: User, as: 'Followings' }
@@ -69,7 +73,8 @@ const userController = {
       const data = user.Tweets.map(tweet => ({
         ...tweet.dataValues,
         isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
-        totalLikedUsers: tweet.dataValues.LikedUsers.length
+        totalLikedUsers: tweet.dataValues.LikedUsers.length,
+        replyCount: tweet.dataValues.Replies.length
       }))
       return res.render('profile', {
         profile: user,
@@ -152,17 +157,15 @@ const userController = {
 
   addFollowing: (req, res) => {
     if (req.user.id === Number(req.body.id)) {
-      req.flash('error_messages', "無法追蹤自己")
+      req.flash('error_messages', '無法追蹤自己')
       return res.redirect('back')
-    }
-    else {
+    } else {
       return Followship.create({
         followerId: req.user.id,
         followingId: req.body.id
+      }).then(followship => {
+        return res.redirect('back')
       })
-        .then((followship) => {
-          return res.redirect('back')
-        })
     }
   },
 
@@ -172,16 +175,105 @@ const userController = {
         followerId: req.user.id,
         followingId: req.params.followingId
       }
-    })
-      .then((followship) => {
-        followship.destroy()
-          .then((followship) => {
-            return res.redirect('back')
-          })
+    }).then(followship => {
+      followship.destroy().then(followship => {
+        return res.redirect('back')
       })
+    })
+  },
+  getLikes: (req, res) => {
+    return User.findByPk(req.params.id, {
+      include: [
+        {
+          model: Tweet,
+          include: [{ model: User, as: 'LikedUsers' }]
+        },
+        {
+          model: Tweet,
+          through: Like,
+          as: 'LikedTweets',
+          include: [
+            User,
+            { model: User, through: Like, as: 'LikedUsers' },
+            { model: Reply }
+          ]
+        },
+        { model: User, as: 'Followers' },
+        { model: User, as: 'Followings' }
+      ],
+      order: [[{ model: Tweet, as: 'LikedTweets' }, Like, 'createdAt', 'DESC']]
+    }).then(user => {
+      user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
+      const totalTweets = user.Tweets.length
+      const totalLiked = user.LikedTweets.length
+      const totalFollowers = user.Followers.length
+      const totalFollowings = user.Followings.length
+      const likedTweets = user.LikedTweets.map(tweet => ({
+        ...tweet.dataValues,
+        isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
+        totalLikedUsers: tweet.dataValues.LikedUsers.length,
+        replyCount: tweet.dataValues.Replies.length
+      }))
+      return res.render('likes', {
+        profile: user,
+        totalLiked,
+        totalFollowers,
+        totalFollowings,
+        totalTweets,
+        likedTweets
+      })
+    })
+  },
+  getFollowings: (req, res) => {
+    return User.findByPk(req.params.id, {
+      include: [{ model: User, as: 'Followings' }, { model: Tweet, as: 'LikedTweets' },
+      { model: User, as: 'Followers' }, Tweet],
+      order: [[{ model: User, as: 'Followings' }, 'createdAt', 'DESC']]
+    }).then(user => {
+      const totalTweets = user.Tweets.length
+      const totalLiked = user.LikedTweets.length
+      const totalFollowers = user.Followers.length
+      const totalFollowings = user.Followings.length
+      user.Followings = user.Followings.map(r => ({
+        ...r.dataValues,
+        introduction: r.dataValues.introduction ? r.dataValues.introduction.substring(0, 50) : r.dataValues.introduction,
+        isFollowed: req.user.Followings.map(r => r.id).includes(r.dataValues.id)
+      }))
+      // user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
+      return res.render('followings', {
+        profile: user,
+        totalLiked,
+        totalFollowers,
+        totalFollowings,
+        totalTweets
+      })
+    })
+  },
 
-  }
-
+  getFollowers: (req, res) => {
+    return User.findByPk(req.params.id, {
+      include: [{ model: User, as: 'Followers' }, { model: Tweet, as: 'LikedTweets' },
+      { model: User, as: 'Followings' }, Tweet],
+      order: [[{ model: User, as: 'Followers' }, 'createdAt', 'DESC']]
+    }).then(user => {
+      const totalTweets = user.Tweets.length
+      const totalLiked = user.LikedTweets.length
+      const totalFollowers = user.Followers.length
+      const totalFollowings = user.Followings.length
+      user.Followers = user.Followers.map(r => ({
+        ...r.dataValues,
+        introduction: r.dataValues.introduction ? r.dataValues.introduction.substring(0, 50) : r.dataValues.introduction,
+        isFollowed: req.user.Followings.map(r => r.id).includes(r.dataValues.id)
+      }))
+      // user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
+      return res.render('followers', {
+        profile: user, totalLiked,
+        totalFollowers,
+        totalFollowings,
+        totalTweets
+      })
+    })
+  },
 }
 
 module.exports = userController

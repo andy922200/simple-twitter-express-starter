@@ -50,7 +50,7 @@ const tweetController = {
   },
   getTweetReplies: (req, res) => {
     Tweet.findByPk(req.params.id, {
-      include: [User, { model: Reply, include: [User] }],
+      include: [User, { model: User, as: 'LikedUsers' }, { model: Reply, include: [User] }],
       order: [[{ model: Reply }, 'createdAt', 'DESC']]
     }).then(result => {
       const tweet = result.dataValues
@@ -63,18 +63,15 @@ const tweetController = {
           { model: Tweet, as: 'LikedTweets' },
           { model: User, as: 'Followers' },
           { model: User, as: 'Followings' },
-          { model: Tweet, include: [{ model: User, as: 'LikedUsers' }], where: { 'description': tweet.description } }
+          { model: Tweet, where: { 'description': tweet.description } }
         ]
       }).then(user => {
         const totalTweets = user.Tweets.length
         const totalLiked = user.LikedTweets.length
         const totalFollowers = user.Followers.length
         const totalFollowings = user.Followings.length
-        const data = user.Tweets.map(r => ({
-          ...r.dataValues,
-          isLiked: req.user.LikedTweets.map(d => d.id).includes(r.id),
-          totalLikedUsers: r.dataValues.LikedUsers.length
-        }))
+        const isLiked = req.user.LikedTweets.map(d => d.id).includes(result.id)
+        const totalLikedUsers = result.LikedUsers.length
         return res.render('replies', {
           reply: reply,
           tweet: tweet,
@@ -85,7 +82,8 @@ const tweetController = {
           totalLiked: totalLiked,
           totalFollowers: totalFollowers,
           totalFollowings: totalFollowings,
-          LikedTweet: data[0]
+          isLiked: isLiked,
+          totalLikedUsers: totalLikedUsers
         })
       })
     })

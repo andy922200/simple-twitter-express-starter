@@ -29,15 +29,15 @@
           <p><a href="/users/{{tweetUser.id}}/tweets">@{{tweetUser.name}}</a> {{moment tweet.createdAt}}</p>
           <p>{{tweet.description}}</p>
           <span><i class="far fa-comment"></i>({{replyCount}})</span>
-          {{#if LikedTweet.isLiked}}
-          <form action="/tweets/{{LikedTweet.id}}/unlike" method="POST" style="display: inline-block">
+          {{#if isLiked}}
+          <form action="/tweets/{{tweet.id}}/unlike" method="POST" style="display: inline-block">
             <button type="submit" class="btn btn-link" style="text-decoration:none"><i
-                class=" fas fa-thumbs-up"></i>({{LikedTweet.totalLikedUsers}})</button>
+                class=" fas fa-thumbs-up"></i>({{totalLikedUsers}})</button>
           </form>
           {{else}}
-          <form action="/tweets/{{LikedTweet.id}}/like" method="POST" style="display:inline-block">
+          <form action="/tweets/{{tweet.id}}/like" method="POST" style="display:inline-block">
             <button type="submit" class="btn btn-link" style="text-decoration:none"><i
-                class="far fa-thumbs-up"></i>({{LikedTweet.totalLikedUsers}})</button>
+                class="far fa-thumbs-up"></i>({{totalLikedUsers}})</button>
           </form>
           {{/if}}
         </div>

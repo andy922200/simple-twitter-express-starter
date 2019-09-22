@@ -50,30 +50,45 @@ const tweetController = {
   },
   getTweetReplies: (req, res) => {
     Tweet.findByPk(req.params.id, {
-      include: [
-        User,
-        { model: User, as: 'LikedUsers' },
-        { model: Reply, include: [User] }
-      ]
+      include: [{ model: User, include: [Tweet] }, { model: User, as: 'LikedUsers' }, { model: Reply, include: [User] }],
+      order: [[{ model: Reply }, 'createdAt', 'DESC']]
     }).then(result => {
       console.log(result)
       const tweet = result.dataValues
       const tweetUser = tweet.User.dataValues
+      const totalTweets = result.User.Tweets.length
       const reply = result.Replies
       const isFollowed = req.user.Followings.map(d => d.id).includes(
         tweetUser.id
       )
       const replyCount = reply.length
-      const totalLikedUsers = result.LikedUsers.length
-      const isLiked = req.user.LikedTweets.map(d => d.id).includes(result.id)
-      return res.render('replies', {
-        reply: reply,
-        tweet: tweet,
-        tweetUser: tweetUser,
-        isFollowed: isFollowed,
-        replyCount: replyCount,
-        totalLikedUsers,
-        isLiked
+
+      User.findByPk(tweetUser.id, {
+        include: [
+          { model: Tweet, as: 'LikedTweets' },
+          { model: User, as: 'Followers' },
+          { model: User, as: 'Followings' },
+          { model: Tweet, where: { 'description': tweet.description } }
+        ]
+      }).then(user => {
+        const totalLiked = user.LikedTweets.length
+        const totalFollowers = user.Followers.length
+        const totalFollowings = user.Followings.length
+        const isLiked = req.user.LikedTweets.map(d => d.id).includes(result.id)
+        const totalLikedUsers = result.LikedUsers.length
+        return res.render('replies', {
+          reply: reply,
+          tweet: tweet,
+          tweetUser: tweetUser,
+          isFollowed: isFollowed,
+          replyCount: replyCount,
+          totalTweets: totalTweets,
+          totalLiked: totalLiked,
+          totalFollowers: totalFollowers,
+          totalFollowings: totalFollowings,
+          isLiked: isLiked,
+          totalLikedUsers: totalLikedUsers
+        })
       })
     })
   },

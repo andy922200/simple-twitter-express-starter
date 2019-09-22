@@ -192,14 +192,17 @@ const userController = {
       const totalLiked = user.LikedTweets.length
       const totalFollowers = user.Followers.length
       const totalFollowings = user.Followings.length
+      const userFollowed = req.user.Followings.map(d => d.id).includes(user.id)
       user.Followings = user.Followings.map(r => ({
         ...r.dataValues,
         introduction: r.dataValues.introduction ? r.dataValues.introduction.substring(0, 50) : r.dataValues.introduction,
-        isFollowed: req.user.Followings.map(r => r.id).includes(r.dataValues.id)
+        isFollowed: req.user.Followings.map(d => d.id).includes(r.dataValues.id)
       }))
+      //console.log(User.dataValues.id)
       // user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
       return res.render('followings', {
         profile: user,
+        userFollowed,
         totalLiked,
         totalFollowers,
         totalFollowings,
@@ -218,14 +221,16 @@ const userController = {
       const totalLiked = user.LikedTweets.length
       const totalFollowers = user.Followers.length
       const totalFollowings = user.Followings.length
+      const userFollowed = req.user.Followings.map(d => d.id).includes(user.id)
       user.Followers = user.Followers.map(r => ({
         ...r.dataValues,
         introduction: r.dataValues.introduction ? r.dataValues.introduction.substring(0, 50) : r.dataValues.introduction,
         isFollowed: req.user.Followings.map(r => r.id).includes(r.dataValues.id)
       }))
-      // user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
       return res.render('followers', {
-        profile: user, totalLiked,
+        profile: user,
+        userFollowed,
+        totalLiked,
         totalFollowers,
         totalFollowings,
         totalTweets

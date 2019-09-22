@@ -10,13 +10,13 @@
     {{#ifCond profile.id user.id}}
     <a href="/users/{{user.id}}/edit"><button class="btn btn-primary">Edit Profile</button></a>
     {{else}}
-    {{#if profile.isFollowed}}
+    {{#if userFollowed}}
     <form action="/followships/{{profile.id}}/?_method=DELETE" method="POST" style="display: contents;">
-      <button type="submit" class="btn btn-danger" name="id" value={{profile.id}}>Unfollow</button>
+      <button type="submit" class="btn btn-danger">Unfollow</button>
     </form>
     {{else}}
     <form action="/followships/" method="POST" style="display: contents;">
-      <button type="submit" class="btn btn-primary" name="id" value={{profile.id}}>Follow</button>
+      <button type="submit" class="btn btn-primary" name="id" value="{{profile.id}}">Follow</button>
     </form>
     {{/if}}
     {{/ifCond}}
@@ -34,11 +34,11 @@
             <p>{{this.introduction}}</p>
 
             {{#ifCond this.id ../user.id}}
-            <a href="/users/{{user.id}}/edit"><button class="btn btn-primary">Edit Profile</button></a>
+            <a href="/users/{{../user.id}}/edit"><button class="btn btn-primary">Edit Profile</button></a>
             {{else}}
             {{#if this.isFollowed}}
             <form class="text-right" action="/followships/{{this.id}}/?_method=DELETE" method="POST">
-              <button type="submit" class="btn btn-primary" name="id" value={{this.id}}>Unfollow</button>
+              <button type="submit" class="btn btn-danger">Unfollow</button>
             </form>
             {{else}}
             <form class="text-right" action="/followships" method="POST">

@@ -3,10 +3,10 @@
     <img src="{{profile.avatar}}" alt="{{profile.name}}" style="width: 250px;margin-bottom: 25px;">
     <h3>{{profile.name}}</h3>
     <p>{{profile.introduction}}</p>
-    <p>Tweets({{totalTweets}})</p>
+    <p><a href="/users/{{profile.id}}/tweets">Tweets({{totalTweets}})</a></p>
     <p><a href="/users/{{profile.id}}/followings">Following({{totalFollowings}})</a></p>
     <p><a href="/users/{{profile.id}}/followers">Follower({{totalFollowers}})</a></p>
-    <p><a href="/users/{{profile.id}}/likes">Like({{totalLiked}})</a></p>
+    <p>Like({{totalLiked}})</p>
     {{#ifCond profile.id user.id}}
     <a href="/users/{{user.id}}/edit"><button class="btn btn-primary">Edit Profile</button></a>
     {{else}}

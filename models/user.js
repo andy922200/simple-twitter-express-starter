@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'followerId',
       as: 'Followings'
     })
+    User.hasMany(models.Like)
   }
   return User
 }

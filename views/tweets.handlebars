@@ -47,7 +47,10 @@
         <div class="col-md-9">
           <p><a href="/users/{{this.id}}/tweets">@{{this.name}}</a></p>
           <p>{{this.introduction}}</p>
-
+          {{#ifCond this.id ../user.id}}
+          <a href="/users/{{this.id}}/tweets" class="float-right"><button class="btn btn-primary">Edit
+              Profile({{this.totalFollowers}})</button></a>
+          {{else}}
           {{#if this.isFollowed }}
           <form action="/followships/{{this.id}}?_method=DELETE" method="POST"><button type="submit"
               class="btn btn-danger float-right">UnFollow({{this.totalFollowers}})</button></form>
@@ -57,7 +60,7 @@
               value={{this.id}}>Follow({{this.totalFollowers}})</button>
           </form>
           {{/if}}
-
+          {{/ifCond}}
         </div>
       </div>
     </div>

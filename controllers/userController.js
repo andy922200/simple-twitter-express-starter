@@ -226,8 +226,12 @@ const userController = {
   },
   getFollowings: (req, res) => {
     return User.findByPk(req.params.id, {
-      include: [{ model: User, as: 'Followings' }, { model: Tweet, as: 'LikedTweets' },
-      { model: User, as: 'Followers' }, Tweet],
+      include: [
+        { model: User, as: 'Followings' },
+        { model: Tweet, as: 'LikedTweets' },
+        { model: User, as: 'Followers' },
+        Tweet
+      ],
       order: [[{ model: User, as: 'Followings' }, 'createdAt', 'DESC']]
     }).then(user => {
       const totalTweets = user.Tweets.length
@@ -237,7 +241,9 @@ const userController = {
       const userFollowed = req.user.Followings.map(d => d.id).includes(user.id)
       user.Followings = user.Followings.map(r => ({
         ...r.dataValues,
-        introduction: r.dataValues.introduction ? r.dataValues.introduction.substring(0, 50) : r.dataValues.introduction,
+        introduction: r.dataValues.introduction
+          ? r.dataValues.introduction.substring(0, 50)
+          : r.dataValues.introduction,
         isFollowed: req.user.Followings.map(d => d.id).includes(r.dataValues.id)
       }))
       return res.render('followings', {
@@ -253,8 +259,12 @@ const userController = {
 
   getFollowers: (req, res) => {
     return User.findByPk(req.params.id, {
-      include: [{ model: User, as: 'Followers' }, { model: Tweet, as: 'LikedTweets' },
-      { model: User, as: 'Followings' }, Tweet],
+      include: [
+        { model: User, as: 'Followers' },
+        { model: Tweet, as: 'LikedTweets' },
+        { model: User, as: 'Followings' },
+        Tweet
+      ],
       order: [[{ model: User, as: 'Followers' }, 'createdAt', 'DESC']]
     }).then(user => {
       const totalTweets = user.Tweets.length
@@ -264,7 +274,9 @@ const userController = {
       const userFollowed = req.user.Followings.map(d => d.id).includes(user.id)
       user.Followers = user.Followers.map(r => ({
         ...r.dataValues,
-        introduction: r.dataValues.introduction ? r.dataValues.introduction.substring(0, 50) : r.dataValues.introduction,
+        introduction: r.dataValues.introduction
+          ? r.dataValues.introduction.substring(0, 50)
+          : r.dataValues.introduction,
         isFollowed: req.user.Followings.map(r => r.id).includes(r.dataValues.id)
       }))
       return res.render('followers', {
@@ -276,7 +288,7 @@ const userController = {
         totalTweets
       })
     })
-  },
+  }
 }
 
 module.exports = userController

@@ -3,6 +3,7 @@ const db = require('../models')
 const User = db.User
 const Tweet = db.Tweet
 const Reply = db.Reply
+const Followship = db.Followship
 
 const tweetController = {
   getTweets: (req, res) => {
@@ -17,7 +18,10 @@ const tweetController = {
         replyCount: r.dataValues.Replies.length
       }))
       User.findAll({
-        include: [{ model: User, as: 'Followers' }]
+        include: [{ model: User, as: 'Followers' }],
+        order: [
+          [{ model: User, as: 'Followers' }, Followship, 'createdAt', 'DESC']
+        ]
       }).then(users => {
         const topFollowers = users
           .map(r => ({

@@ -190,13 +190,8 @@ const userController = {
         },
         {
           model: Tweet,
-          through: Like,
           as: 'LikedTweets',
-          include: [
-            User,
-            { model: User, through: Like, as: 'LikedUsers' },
-            { model: Reply }
-          ]
+          include: [User, { model: User, as: 'LikedUsers' }, { model: Reply }]
         },
         { model: User, as: 'Followers' },
         { model: User, as: 'Followings' }

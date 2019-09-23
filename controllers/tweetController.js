@@ -62,7 +62,6 @@ const tweetController = {
         tweetUser.id
       )
       const replyCount = reply.length
-
       User.findByPk(tweetUser.id, {
         include: [
           { model: Tweet, as: 'LikedTweets' },

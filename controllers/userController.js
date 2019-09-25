@@ -170,15 +170,13 @@ const userController = {
   },
 
   removeFollowing: (req, res) => {
-    return Followship.findOne({
+    return Followship.destroy({
       where: {
         followerId: req.user.id,
         followingId: req.params.followingId
       }
     }).then(followship => {
-      followship.destroy().then(followship => {
-        return res.redirect('back')
-      })
+      return res.redirect('back')
     })
   },
   getLikes: (req, res) => {

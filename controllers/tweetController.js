@@ -4,14 +4,28 @@ const User = db.User
 const Tweet = db.Tweet
 const Reply = db.Reply
 const Followship = db.Followship
+const pageLimit = 15
 
 const tweetController = {
   getTweets: (req, res) => {
-    Tweet.findAll({
+    let offset = 0
+    if (req.query.page) {
+      offset = (req.query.page - 1) * pageLimit
+    }
+    Tweet.findAndCountAll({
       include: [User, Reply, { model: User, as: 'LikedUsers' }],
+      offset: offset,
+      limit: pageLimit,
       order: [['createdAt', 'DESC']]
     }).then(tweets => {
-      const data = tweets.map(r => ({
+      let page = Number(req.query.page) || 1
+      let pages = Math.ceil(tweets.count / pageLimit)
+      let totalPage = Array.from({ length: pages }).map(
+        (item, index) => index + 1
+      )
+      let prev = page - 1 < 1 ? 1 : page - 1
+      let next = page + 1 > pages ? pages : page + 1
+      const data = tweets.rows.map(r => ({
         ...r.dataValues,
         isLiked: req.user.LikedTweets.map(d => d.id).includes(r.id),
         totalLikedUsers: r.dataValues.LikedUsers.length,
@@ -32,7 +46,14 @@ const tweetController = {
           }))
           .sort((a, b) => b.totalFollowers - a.totalFollowers)
           .slice(0, 10)
-        res.render('tweets', { tweets: data, topFollowers: topFollowers })
+        res.render('tweets', {
+          tweets: data,
+          topFollowers: topFollowers,
+          page: page,
+          totalPage: totalPage,
+          prev: prev,
+          next: next
+        })
       })
     })
   },

@@ -77,9 +77,9 @@ const userController = {
         ...tweet.dataValues,
         isLiked: helpers.getUser(req).LikedTweets
           ? helpers
-              .getUser(req)
-              .LikedTweets.map(d => d.id)
-              .includes(tweet.id)
+            .getUser(req)
+            .LikedTweets.map(d => d.id)
+            .includes(tweet.id)
           : helpers.getUser(req).LikedTweets,
         totalLikedUsers: tweet.dataValues.LikedUsers.length,
         replyCount: tweet.dataValues.Replies.length
@@ -149,7 +149,7 @@ const userController = {
     return Like.create({
       UserId: helpers.getUser(req).id,
       TweetId: req.params.id
-    }).then(tweet => {
+    }).then(like => {
       return res.redirect('back')
     })
   },
@@ -166,7 +166,7 @@ const userController = {
   addFollowing: (req, res) => {
     if (helpers.getUser(req).id === Number(req.body.id)) {
       req.flash('error_messages', '無法追蹤自己')
-      return res.redirect('back')
+      return res.redirect(200, 'back')
     } else {
       return Followship.create({
         followerId: helpers.getUser(req).id,
@@ -215,9 +215,9 @@ const userController = {
         ...tweet.dataValues,
         isLiked: helpers.getUser(req).LikedTweets
           ? helpers
-              .getUser(req)
-              .LikedTweets.map(d => d.id)
-              .includes(tweet.id)
+            .getUser(req)
+            .LikedTweets.map(d => d.id)
+            .includes(tweet.id)
           : helpers.getUser(req).LikedTweets,
         totalLikedUsers: tweet.dataValues.LikedUsers.length,
         replyCount: tweet.dataValues.Replies.length
@@ -239,9 +239,6 @@ const userController = {
         { model: Tweet, as: 'LikedTweets' },
         { model: User, as: 'Followers' },
         Tweet
-      ],
-      order: [
-        [{ model: User, as: 'Followings' }, Followship, 'createdAt', 'DESC']
       ]
     }).then(user => {
       const totalTweets = user.Tweets.length
@@ -261,7 +258,7 @@ const userController = {
           .getUser(req)
           .Followings.map(d => d.id)
           .includes(r.dataValues.id)
-      }))
+      })).sort((a, b) => b.Followship.createdAt - a.Followship.createdAt)
       res.set('Content-Type', 'text/html')
       return res.render('followings', {
         profile: user,
@@ -281,9 +278,6 @@ const userController = {
         { model: Tweet, as: 'LikedTweets' },
         { model: User, as: 'Followings' },
         Tweet
-      ],
-      order: [
-        [{ model: User, as: 'Followers' }, Followship, 'createdAt', 'DESC']
       ]
     }).then(user => {
       const totalTweets = user.Tweets.length
@@ -303,7 +297,7 @@ const userController = {
           .getUser(req)
           .Followings.map(r => r.id)
           .includes(r.dataValues.id)
-      }))
+      })).sort((a, b) => b.Followship.createdAt - a.Followship.createdAt)
       return res.render('followers', {
         profile: user,
         userFollowed,

@@ -30,9 +30,9 @@ const tweetController = {
         ...r.dataValues,
         isLiked: helpers.getUser(req).LikedTweets
           ? helpers
-              .getUser(req)
-              .LikedTweets.map(d => d.id)
-              .includes(r.id)
+            .getUser(req)
+            .LikedTweets.map(d => d.id)
+            .includes(r.id)
           : helpers.getUser(req).LikedTweets,
         totalLikedUsers: r.dataValues.LikedUsers.length,
         replyCount: r.dataValues.Replies.length
@@ -69,20 +69,21 @@ const tweetController = {
     })
   },
   postTweet: (req, res) => {
-    if (!req.body.newTweet) {
+    if (!req.body.description) {
       req.flash('error_messages', '請記得填入訊息')
       return res.redirect('back')
     }
-    if (req.body.newTweet.length > 140) {
-      req.flash('error_messages', '請勿填入超過140個字')
+    if (req.body.description.length > 140) {
+      req.flash('error_messages', '請填入小於140字')
       return res.redirect('back')
     }
-    return Tweet.create({
-      description: req.body.newTweet,
+    Tweet.create({
+      description: req.body.description,
       UserId: helpers.getUser(req).id
     }).then(tweet => {
-      res.redirect(`/tweets`)
+      return res.redirect(`/tweets`)
     })
+
   },
   getTweetReplies: (req, res) => {
     Tweet.findByPk(req.params.id, {
@@ -115,9 +116,9 @@ const tweetController = {
         const totalFollowings = user.Followings.length
         const isLiked = helpers.getUser(req).LikedTweets
           ? helpers
-              .getUser(req)
-              .LikedTweets.map(d => d.id)
-              .includes(tweet.id)
+            .getUser(req)
+            .LikedTweets.map(d => d.id)
+            .includes(tweet.id)
           : helpers.getUser(req).LikedTweets
         const totalLikedUsers = result.LikedUsers.length
         return res.render('replies', {
@@ -137,12 +138,8 @@ const tweetController = {
     })
   },
   postReply: (req, res) => {
-    if (!req.body.newReply) {
+    if (!/^[^\s]+(\s+[^\s]+)*$/g.test(req.body.newReply)) {
       req.flash('error_messages', '請記得填入訊息')
-      return res.redirect('back')
-    }
-    if (req.body.newReply.length > 140) {
-      req.flash('error_messages', '請勿填入超過140個字')
       return res.redirect('back')
     }
     Tweet.findByPk(req.params.id)

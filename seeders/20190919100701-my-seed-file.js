@@ -35,7 +35,7 @@ module.exports = {
       'Tweets',
       Array.from({ length: 200 }).map(d => ({
         description: faker.lorem.text(),
-        UserID: Math.floor(Math.random() * 20) + 1,
+        UserId: Math.floor(Math.random() * 20) + 1,
         createdAt: new Date(),
         updatedAt: new Date()
       })),

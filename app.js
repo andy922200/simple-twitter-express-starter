@@ -2,7 +2,6 @@ const express = require('express')
 const helpers = require('./_helpers')
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
-const db = require('./models')
 const flash = require('connect-flash')
 const session = require('express-session')
 const methodOverride = require('method-override')
@@ -13,6 +12,7 @@ const port = process.env.PORT || 3000
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
+const db = require('./models')
 
 app.engine(
   'handlebars',

@@ -77,9 +77,9 @@ const userController = {
         ...tweet.dataValues,
         isLiked: helpers.getUser(req).LikedTweets
           ? helpers
-              .getUser(req)
-              .LikedTweets.map(d => d.id)
-              .includes(tweet.id)
+            .getUser(req)
+            .LikedTweets.map(d => d.id)
+            .includes(tweet.id)
           : helpers.getUser(req).LikedTweets,
         totalLikedUsers: tweet.dataValues.LikedUsers.length,
         replyCount: tweet.dataValues.Replies.length
@@ -215,9 +215,9 @@ const userController = {
         ...tweet.dataValues,
         isLiked: helpers.getUser(req).LikedTweets
           ? helpers
-              .getUser(req)
-              .LikedTweets.map(d => d.id)
-              .includes(tweet.id)
+            .getUser(req)
+            .LikedTweets.map(d => d.id)
+            .includes(tweet.id)
           : helpers.getUser(req).LikedTweets,
         totalLikedUsers: tweet.dataValues.LikedUsers.length,
         replyCount: tweet.dataValues.Replies.length
@@ -240,9 +240,7 @@ const userController = {
         { model: User, as: 'Followers' },
         Tweet
       ],
-      order: [
-        [{ model: User, as: 'Followings' }, Followship, 'createdAt', 'DESC']
-      ]
+
     }).then(user => {
       const totalTweets = user.Tweets.length
       const totalLiked = user.LikedTweets.length
@@ -261,7 +259,7 @@ const userController = {
           .getUser(req)
           .Followings.map(d => d.id)
           .includes(r.dataValues.id)
-      }))
+      })).sort((a, b) => b.Followship.createdAt - a.Followship.createdAt)
       res.set('Content-Type', 'text/html')
       return res.render('followings', {
         profile: user,
@@ -282,9 +280,7 @@ const userController = {
         { model: User, as: 'Followings' },
         Tweet
       ],
-      order: [
-        [{ model: User, as: 'Followers' }, Followship, 'createdAt', 'DESC']
-      ]
+
     }).then(user => {
       const totalTweets = user.Tweets.length
       const totalLiked = user.LikedTweets.length
@@ -303,7 +299,7 @@ const userController = {
           .getUser(req)
           .Followings.map(r => r.id)
           .includes(r.dataValues.id)
-      }))
+      })).sort((a, b) => b.Followship.createdAt - a.Followship.createdAt)
       return res.render('followers', {
         profile: user,
         userFollowed,

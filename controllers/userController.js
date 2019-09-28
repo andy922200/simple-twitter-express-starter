@@ -7,6 +7,7 @@ const Reply = db.Reply
 const Followship = db.Followship
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const helpers = require('../_helpers')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -65,14 +66,21 @@ const userController = {
       ],
       order: [[{ model: Tweet }, 'createdAt', 'DESC']]
     }).then(user => {
-      user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
+      user.isFollowed = user.Followers.map(r => r.id).includes(
+        helpers.getUser(req).id
+      )
       const totalTweets = user.Tweets.length
       const totalLiked = user.LikedTweets.length
       const totalFollowers = user.Followers.length
       const totalFollowings = user.Followings.length
       const data = user.Tweets.map(tweet => ({
         ...tweet.dataValues,
-        isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
+        isLiked: helpers.getUser(req).LikedTweets
+          ? helpers
+              .getUser(req)
+              .LikedTweets.map(d => d.id)
+              .includes(tweet.id)
+          : helpers.getUser(req).LikedTweets,
         totalLikedUsers: tweet.dataValues.LikedUsers.length,
         replyCount: tweet.dataValues.Replies.length
       }))
@@ -87,7 +95,7 @@ const userController = {
     })
   },
   editUser: (req, res) => {
-    if (Number(req.params.id) !== req.user.id) {
+    if (Number(req.params.id) !== helpers.getUser(req).id) {
       req.flash('error_messages', '您無權編輯他人檔案')
       return res.redirect(`/users/${req.params.id}/tweets`)
     } else {
@@ -97,7 +105,7 @@ const userController = {
     }
   },
   putUser: (req, res) => {
-    if (Number(req.params.id) !== Number(req.user.id)) {
+    if (Number(req.params.id) !== Number(helpers.getUser(req).id)) {
       req.flash('error_messages', '您無權編輯他人檔案')
       return res.redirect(`/users/${req.params.id}/tweets`)
     }
@@ -139,7 +147,7 @@ const userController = {
 
   addLike: (req, res) => {
     return Like.create({
-      UserId: req.user.id,
+      UserId: helpers.getUser(req).id,
       TweetId: req.params.id
     }).then(tweet => {
       return res.redirect('back')
@@ -147,7 +155,7 @@ const userController = {
   },
   removeLike: (req, res) => {
     return Like.findOne({
-      where: { UserId: req.user.id, TweetId: req.params.id }
+      where: { UserId: helpers.getUser(req).id, TweetId: req.params.id }
     }).then(like => {
       like.destroy().then(tweet => {
         return res.redirect('back')
@@ -156,12 +164,12 @@ const userController = {
   },
 
   addFollowing: (req, res) => {
-    if (req.user.id === Number(req.body.id)) {
+    if (helpers.getUser(req).id === Number(req.body.id)) {
       req.flash('error_messages', '無法追蹤自己')
       return res.redirect('back')
     } else {
       return Followship.create({
-        followerId: req.user.id,
+        followerId: helpers.getUser(req).id,
         followingId: req.body.id
       }).then(followship => {
         return res.redirect('back')
@@ -173,7 +181,7 @@ const userController = {
     return Followship.destroy({
       where: {
         followingId: req.params.followingId,
-        followerId: req.user.id
+        followerId: helpers.getUser(req).id
       }
     }).then(followship => {
       return res.redirect('back')
@@ -196,14 +204,21 @@ const userController = {
       ],
       order: [[{ model: Tweet, as: 'LikedTweets' }, Like, 'createdAt', 'DESC']]
     }).then(user => {
-      user.isFollowed = user.Followers.map(r => r.id).includes(req.user.id)
+      user.isFollowed = user.Followers.map(r => r.id).includes(
+        helpers.getUser(req).id
+      )
       const totalTweets = user.Tweets.length
       const totalLiked = user.LikedTweets.length
       const totalFollowers = user.Followers.length
       const totalFollowings = user.Followings.length
       const likedTweets = user.LikedTweets.map(tweet => ({
         ...tweet.dataValues,
-        isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
+        isLiked: helpers.getUser(req).LikedTweets
+          ? helpers
+              .getUser(req)
+              .LikedTweets.map(d => d.id)
+              .includes(tweet.id)
+          : helpers.getUser(req).LikedTweets,
         totalLikedUsers: tweet.dataValues.LikedUsers.length,
         replyCount: tweet.dataValues.Replies.length
       }))
@@ -225,20 +240,29 @@ const userController = {
         { model: User, as: 'Followers' },
         Tweet
       ],
-      order: [[{ model: User, as: 'Followings' }, 'createdAt', 'DESC']]
+      order: [
+        [{ model: User, as: 'Followings' }, Followship, 'createdAt', 'DESC']
+      ]
     }).then(user => {
       const totalTweets = user.Tweets.length
       const totalLiked = user.LikedTweets.length
       const totalFollowers = user.Followers.length
       const totalFollowings = user.Followings.length
-      const userFollowed = req.user.Followings.map(d => d.id).includes(user.id)
+      const userFollowed = helpers
+        .getUser(req)
+        .Followings.map(d => d.id)
+        .includes(user.id)
       user.Followings = user.Followings.map(r => ({
         ...r.dataValues,
         introduction: r.dataValues.introduction
-          ? r.dataValues.introduction.substring(0, 50)
+          ? r.dataValues.introduction.substring(0, 20)
           : r.dataValues.introduction,
-        isFollowed: req.user.Followings.map(d => d.id).includes(r.dataValues.id)
+        isFollowed: helpers
+          .getUser(req)
+          .Followings.map(d => d.id)
+          .includes(r.dataValues.id)
       }))
+      res.set('Content-Type', 'text/html')
       return res.render('followings', {
         profile: user,
         userFollowed,
@@ -258,19 +282,27 @@ const userController = {
         { model: User, as: 'Followings' },
         Tweet
       ],
-      order: [[{ model: User, as: 'Followers' }, 'createdAt', 'DESC']]
+      order: [
+        [{ model: User, as: 'Followers' }, Followship, 'createdAt', 'DESC']
+      ]
     }).then(user => {
       const totalTweets = user.Tweets.length
       const totalLiked = user.LikedTweets.length
       const totalFollowers = user.Followers.length
       const totalFollowings = user.Followings.length
-      const userFollowed = req.user.Followings.map(d => d.id).includes(user.id)
+      const userFollowed = helpers
+        .getUser(req)
+        .Followings.map(d => d.id)
+        .includes(user.id)
       user.Followers = user.Followers.map(r => ({
         ...r.dataValues,
         introduction: r.dataValues.introduction
           ? r.dataValues.introduction.substring(0, 50)
           : r.dataValues.introduction,
-        isFollowed: req.user.Followings.map(r => r.id).includes(r.dataValues.id)
+        isFollowed: helpers
+          .getUser(req)
+          .Followings.map(r => r.id)
+          .includes(r.dataValues.id)
       }))
       return res.render('followers', {
         profile: user,

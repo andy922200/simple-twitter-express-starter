@@ -5,6 +5,7 @@ const Tweet = db.Tweet
 const Reply = db.Reply
 const Followship = db.Followship
 const pageLimit = 15
+const helpers = require('../_helpers')
 
 const tweetController = {
   getTweets: (req, res) => {
@@ -27,7 +28,12 @@ const tweetController = {
       let next = page + 1 > pages ? pages : page + 1
       const data = tweets.rows.map(r => ({
         ...r.dataValues,
-        isLiked: req.user.LikedTweets.map(d => d.id).includes(r.id),
+        isLiked: helpers.getUser(req).LikedTweets
+          ? helpers
+              .getUser(req)
+              .LikedTweets.map(d => d.id)
+              .includes(r.id)
+          : helpers.getUser(req).LikedTweets,
         totalLikedUsers: r.dataValues.LikedUsers.length,
         replyCount: r.dataValues.Replies.length
       }))
@@ -40,8 +46,13 @@ const tweetController = {
         const topFollowers = users
           .map(r => ({
             ...r.dataValues,
-            introduction: r.dataValues.introduction.substring(0, 50),
-            isFollowed: req.user.Followings.map(d => d.id).includes(r.id),
+            introduction: r.dataValues.introduction
+              ? r.dataValues.introduction.substring(0, 50)
+              : '',
+            isFollowed: helpers
+              .getUser(req)
+              .Followings.map(d => d.id)
+              .includes(r.id),
             totalFollowers: r.dataValues.Followers.length
           }))
           .sort((a, b) => b.totalFollowers - a.totalFollowers)
@@ -68,7 +79,7 @@ const tweetController = {
     }
     return Tweet.create({
       description: req.body.newTweet,
-      UserId: req.user.id
+      UserId: helpers.getUser(req).id
     }).then(tweet => {
       res.redirect(`/tweets`)
     })
@@ -82,14 +93,14 @@ const tweetController = {
       ],
       order: [[{ model: Reply }, 'createdAt', 'DESC']]
     }).then(result => {
-      console.log(result)
       const tweet = result.dataValues
       const tweetUser = tweet.User.dataValues
       const totalTweets = result.User.Tweets.length
       const reply = result.Replies
-      const isFollowed = req.user.Followings.map(d => d.id).includes(
-        tweetUser.id
-      )
+      const isFollowed = helpers
+        .getUser(req)
+        .Followings.map(d => d.id)
+        .includes(tweetUser.id)
       const replyCount = reply.length
       User.findByPk(tweetUser.id, {
         include: [
@@ -102,7 +113,12 @@ const tweetController = {
         const totalLiked = user.LikedTweets.length
         const totalFollowers = user.Followers.length
         const totalFollowings = user.Followings.length
-        const isLiked = req.user.LikedTweets.map(d => d.id).includes(result.id)
+        const isLiked = helpers.getUser(req).LikedTweets
+          ? helpers
+              .getUser(req)
+              .LikedTweets.map(d => d.id)
+              .includes(tweet.id)
+          : helpers.getUser(req).LikedTweets
         const totalLikedUsers = result.LikedUsers.length
         return res.render('replies', {
           reply: reply,
@@ -132,7 +148,7 @@ const tweetController = {
     Tweet.findByPk(req.params.id)
       .then(
         Reply.create({
-          UserId: req.user.id,
+          UserId: helpers.getUser(req).id,
           TweetId: req.params.id,
           comment: req.body.newReply
         })

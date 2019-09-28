@@ -37,7 +37,10 @@ app.use((req, res, next) => {
 // use helpers.getUser(req) to replace req.user
 // use helpers.ensureAuthenticated(req) to replace req.isAuthenticated()
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => {
+  db.sequelize.sync()
+  console.log(`Example app listening on port ${port}!`)
+})
 
 require('./routes')(app, passport)
 

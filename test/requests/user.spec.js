@@ -206,7 +206,7 @@ describe('# user request', () => {
       })
       it('followers list ordered by desc', (done) => {
         request(app)
-          .get('/users/1/followers')
+          .get('/users/1/followings')
           .set('Accept', 'application/json')
           .expect(200)
           .end(function (err, res) {

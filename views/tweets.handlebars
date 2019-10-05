@@ -4,6 +4,9 @@
     <form action="/tweets" method="POST">
       <textarea class="form-control rounded-0" name="description" id="description" rows="5" maxlength="140" required
         placeholder="What's on your mind?"></textarea>
+      <div class="invalid-feedback feedback">
+        請輸入 Tweet 內容
+      </div>
       <button class="btn btn-primary float-right mt-3" type="submit">Tweet</button>
     </form>
     <table class="table table-sm table-borderless">
@@ -88,3 +91,26 @@
     {{/each}}
   </div>
 </div>
+
+<script>
+  let addTweet = document.getElementById('description')
+  addTweet.addEventListener('input', showTweetLength)
+  function showTweetLength(event) {
+    let tweetLength = this.value.length
+    let feedback = addTweet.nextElementSibling
+    if (tweetLength === 0) {
+      feedback.innerHTML = "請記得輸入內容"
+      feedback.classList.add('text-danger')
+    } else if (tweetLength < 140 && tweetLength > 0) {
+      feedback.innerHTML = `你已輸入 ${tweetLength} 個字, 還剩 ${140 - tweetLength} 個字`
+      feedback.style.display = 'inherit'
+      feedback.classList.remove('text-danger')
+      feedback.classList.add('text-success')
+    } else {
+      feedback.innerHTML = `你已輸入 ${tweetLength} 個字，超過上限的將不會存入`
+      feedback.style.display = 'inherit'
+      feedback.classList.remove('text-success')
+      feedback.classList.add('text-danger')
+    }
+  }
+</script>

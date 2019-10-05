@@ -72,18 +72,17 @@ const tweetController = {
     if (!req.body.description) {
       req.flash('error_messages', '請記得填入訊息')
       return res.redirect('back')
-    }
-    if (req.body.description.length > 140) {
-      req.flash('error_messages', '請填入小於140字')
+    } else if (req.body.description.length > 140) {
+      req.flash('error_messages', '超過140字的已被忽略')
       return res.redirect('back')
+    } else {
+      Tweet.create({
+        description: req.body.description,
+        UserId: helpers.getUser(req).id
+      }).then(tweet => {
+        return res.redirect(`/tweets`)
+      })
     }
-    Tweet.create({
-      description: req.body.description,
-      UserId: helpers.getUser(req).id
-    }).then(tweet => {
-      return res.redirect(`/tweets`)
-    })
-
   },
   getTweetReplies: (req, res) => {
     Tweet.findByPk(req.params.id, {

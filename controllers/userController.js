@@ -8,6 +8,8 @@ const Followship = db.Followship
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const helpers = require('../_helpers')
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 
 const userController = {
   signUpPage: (req, res) => {
@@ -20,9 +22,17 @@ const userController = {
       return res.redirect('/signup')
     } else {
       // confirm unique user
-      User.findOne({ where: { email: req.body.email } }).then(user => {
+      User.findOne({
+        where: {
+          [Op.or]: [{ email: req.body.email }, { name: req.body.name }]
+        }
+      }).then(user => {
         if (user) {
-          req.flash('error_messages', '信箱重複！')
+          if (user.name === req.body.name) {
+            req.flash('error_messages', '姓名重複！')
+          } else {
+            req.flash('error_messages', '信箱重複！')
+          }
           return res.redirect('/signup')
         } else {
           User.create({
